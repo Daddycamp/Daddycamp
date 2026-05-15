@@ -1024,7 +1024,7 @@ export default function App(){
                     {unassigned.length>0 && <div style={{background:"rgba(239,68,68,.08)",border:"1px solid rgba(239,68,68,.22)",borderRadius:12,padding:"10px 14px",marginBottom:12}}><div style={{fontWeight:800,fontSize:11,color:C.rd,marginBottom:6}}>Noch nicht vergeben ({unassigned.length})</div>{unassigned.map(i=><div key={i} style={{fontSize:11,color:C.tm,padding:"2px 0"}}>• {i}</div>)}</div>}
                     <div style={{background:"rgba(255,255,255,.05)",border:"1px solid "+C.bl,borderRadius:11,padding:"11px 13px"}}>
                       <div style={{fontSize:9,color:C.tm,textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:7}}>Schnellzuweisung</div>
-                      <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>{DADS.map(d=><button key={d} onClick={()=>const nextAsgn={...asgn};allShopItems.forEach(item=>{const k=aKey(item);const c=asgn[k]||[];if(!c.includes(d))nextAsgn[k]=[...c,d];});syncAsgn(nextAsgn);} style={{padding:"4px 10px",borderRadius:20,border:"1px solid "+C.bl,background:"rgba(255,255,255,.07)",color:C.tm,fontSize:10,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{d}</button>)}</div>
+                      <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>{DADS.map(d=><button key={d} onClick={()=>{const nextAsgn={...asgn};allShopItems.forEach(item=>{const k=aKey(item);const c=asgn[k]||[];if(!c.includes(d))nextAsgn[k]=[...c,d];});syncAsgn(nextAsgn);}} style={{padding:"4px 10px",borderRadius:20,border:"1px solid "+C.bl,background:"rgba(255,255,255,.07)",color:C.tm,fontSize:10,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{d}</button>)}</div>
                       <button onClick={()=>syncAsgn({})} style={{width:"100%",padding:"6px",borderRadius:9,border:"1px solid rgba(239,68,68,.35)",background:"transparent",color:"rgba(239,68,68,.6)",fontSize:10,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>Alle Zuweisungen zurücksetzen</button>
                     </div>
                   </div>
@@ -1140,7 +1140,7 @@ export default function App(){
                             {DADS.filter(d=>yd.who[d]).map(d=><span key={d} style={{fontSize:11,background:"rgba(16,185,129,.15)",border:"1px solid rgba(16,185,129,.4)",borderRadius:20,padding:"4px 10px",color:C.tl,fontWeight:600}}>{d}</span>)}
                             {(yd.ex||[]).map((x,i)=>(
                               <div key={i} style={{display:"flex",alignItems:"center",gap:4,background:"rgba(16,185,129,.12)",border:"1px solid rgba(16,185,129,.4)",borderRadius:20,padding:"4px 10px",fontSize:11,color:C.tl,fontWeight:600}}>
-                                {x}<span onClick={()=>const attCopy={...att};attCopy[s.yr]={...(att[s.yr]||{who:{},ex:[]})};attCopy[s.yr].ex=(att[s.yr]?.ex||[]).filter((_,j)=>j!==i);syncAtt(attCopy);} style={{cursor:"pointer",opacity:.7,marginLeft:3,fontSize:10}}>✕</span>
+                                {x}<span onClick={()=>{const attCopy={...att};attCopy[s.yr]={...(att[s.yr]||{who:{},ex:[]})};attCopy[s.yr].ex=(att[s.yr]?.ex||[]).filter((_,j)=>j!==i);syncAtt(attCopy);}} style={{cursor:"pointer",opacity:.7,marginLeft:3,fontSize:10}}>✕</span>
                               </div>
                             ))}
                           </div>
