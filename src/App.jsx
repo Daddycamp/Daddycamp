@@ -243,37 +243,43 @@ export default function App(){
     isMounted.current = true;
     const unsubs = [];
 
-    const listen = (key, setter) => {
-      const r = ref(db, "daddycamp/" + key);
-      const unsub = onValue(r, snap => {
-        if (!isMounted.current) return;
-        const val = snap.val();
-        if (val !== null && val !== undefined) {
-          setter(val);
-        }
-        // If null: keep default state (first time, no data yet)
-      });
-      unsubs.push(unsub);
-    };
+    try {
+      const listen = (key, setter) => {
+        const r = ref(db, "daddycamp/" + key);
+        const unsub = onValue(r, snap => {
+          if (!isMounted.current) return;
+          const val = snap.val();
+          if (val !== null && val !== undefined) {
+            setter(val);
+          }
+        }, err => {
+          console.warn("Firebase read error:", key, err);
+        });
+        unsubs.push(unsub);
+      };
 
-    listen("fams",         setFams);
-    listen("dests",        setDests);
-    listen("myVote",       setMyVote);
-    listen("asgn",         setAsgn);
-    listen("shops",        setShops);
-    listen("shopExtras",   setShopExtras);
-    listen("polls",        setPolls);
-    listen("tVotes",       setTVotes);
-    listen("myTV",         setMyTV);
-    listen("ctrs",         setCtrs);
-    listen("custCtrs",     setCustCtrs);
-    listen("lieder",       setLieder);
-    listen("tricountDone", setTricountDone);
-    listen("att",          setAtt);
-    listen("pkChk",        setPkChk);
-    listen("packExtra",    setPackExtra);
-    listen("sched",        setSched);
+      listen("fams",         setFams);
+      listen("dests",        setDests);
+      listen("myVote",       setMyVote);
+      listen("asgn",         setAsgn);
+      listen("shops",        setShops);
+      listen("shopExtras",   setShopExtras);
+      listen("polls",        setPolls);
+      listen("tVotes",       setTVotes);
+      listen("myTV",         setMyTV);
+      listen("ctrs",         setCtrs);
+      listen("custCtrs",     setCustCtrs);
+      listen("lieder",       setLieder);
+      listen("tricountDone", setTricountDone);
+      listen("att",          setAtt);
+      listen("pkChk",        setPkChk);
+      listen("packExtra",    setPackExtra);
+      listen("sched",        setSched);
+    } catch(e) {
+      console.error("Firebase init error:", e);
+    }
 
+    // Show app regardless - Firebase sync is enhancement, not requirement
     setFbReady(true);
     return () => { isMounted.current = false; unsubs.forEach(u => u()); };
   }, []);
@@ -396,13 +402,7 @@ export default function App(){
   return (
     <>
       <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
-      {!fbReady && (
-        <div style={{position:"fixed",inset:0,background:"#1E2D3E",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",zIndex:9999}}>
-          <div style={{fontSize:48,marginBottom:16}}>⛺</div>
-          <div style={{fontFamily:"Oswald,sans-serif",fontSize:28,fontWeight:700,color:"#F0B429",letterSpacing:6,textTransform:"uppercase"}}>Daddycamp</div>
-          <div style={{color:"rgba(236,242,248,.5)",fontSize:13,marginTop:8,letterSpacing:2}}>Verbinde mit Server...</div>
-        </div>
-      )}
+
       <div style={{minHeight:"100vh",background:C.bg,fontFamily:"Nunito,sans-serif",color:C.tx,paddingBottom:80}}>
 
         {/* HERO */}

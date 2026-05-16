@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getDatabase, ref, onValue, set } from "firebase/database";
 
 const firebaseConfig = {
-  apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
+  apiKey:            "AIzaSyD9c-sZ_rq1S3hE4_LmULfhKJWgE9kiZT8",
   authDomain:        "daddycamp-f6eb6.firebaseapp.com",
   databaseURL:       "https://daddycamp-f6eb6-default-rtdb.europe-west1.firebasedatabase.app",
   projectId:         "daddycamp-f6eb6",
