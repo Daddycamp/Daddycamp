@@ -215,6 +215,23 @@ export default function App(){
   const [newCtrName,setNewCtrName] = useState("");
   const [lieder,setLieder] = useState(LIEDER0);
   const [newLiedYr,setNewLiedYr] = useState("");
+  // Foto-Abstimmung
+  const [fotoVotes,setFotoVotes] = useState({}); // {photoId: {url, caption, votes:[], submittedBy}}
+  const [myFotoVote,setMyFotoVote] = useState(null);
+  const [newFotoCaption,setNewFotoCaption] = useState("");
+  // Aufgaben
+  const [aufgaben,setAufgaben] = useState([
+    {id:"a1",title:"Zelt aufbauen",icon:"⛺",assignee:null,done:false},
+    {id:"a2",title:"Brötchen kaufen (Sa)",icon:"🥐",assignee:null,done:false},
+    {id:"a3",title:"Brötchen kaufen (So)",icon:"🥐",assignee:null,done:false},
+    {id:"a4",title:"Lagerfeuer machen",icon:"🔥",assignee:null,done:false},
+    {id:"a5",title:"Grill anzünden",icon:"🔥",assignee:null,done:false},
+    {id:"a6",title:"Pavillon aufstellen",icon:"⛱️",assignee:null,done:false},
+    {id:"a7",title:"Müll entsorgen",icon:"🗑️",assignee:null,done:false},
+    {id:"a8",title:"Abschluss-Foto",icon:"📸",assignee:null,done:false},
+  ]);
+  const [newAufgabe,setNewAufgabe] = useState("");
+  const [aufgabeAssigning,setAufgabeAssigning] = useState(null);
   const [tricountDone,setTricountDone] = useState({});
   const [sched,setSched] = useState(SCHED0);
   const [editSlot,setEditSlot] = useState(null);
@@ -236,6 +253,36 @@ export default function App(){
 
 
   const fbSet = (key, val) => set(fbRef(db, "daddycamp/" + key), val).catch(e => console.error("FB:", e));
+
+  // ── Push Notifications ─────────────────────────────────────────────────────
+  const notify = (title, body) => {
+    if (typeof Notification === "undefined") return;
+    if (Notification.permission === "granted") {
+      new Notification("⛺ Daddycamp – " + title, {body, icon:"/tent.svg"});
+    }
+  };
+  const requestNotifPermission = () => {
+    if (typeof Notification !== "undefined" && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  };
+
+  // ── Push Notifications ─────────────────────────────────────────────────────
+  const notify = (title, body) => {
+    if (typeof Notification === "undefined") return;
+    if (Notification.permission === "granted") {
+      new Notification("⛺ Daddycamp – " + title, { body, icon: "/tent.svg" });
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then(p => {
+        if (p === "granted") new Notification("⛺ Daddycamp – " + title, { body, icon: "/tent.svg" });
+      });
+    }
+  };
+  const requestNotifPermission = () => {
+    if (typeof Notification !== "undefined" && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  };
 
   // ── Firebase realtime listeners ────────────────────────────────────────────
   const isMounted = useRef(true);
@@ -266,7 +313,10 @@ export default function App(){
     listen("att",          setAtt);
     listen("pkChk",        setPkChk);
     listen("packExtra",    setPackExtra);
-    listen("sched",  setSched);
+    listen("sched",      setSched);
+    listen("fotoVotes",  setFotoVotes);
+    listen("myFotoVote", setMyFotoVote);
+    listen("aufgaben",   setAufgaben);
     return () => { isMounted.current = false; unsubs.forEach(u => u()); };
   }, []);
 
@@ -317,6 +367,9 @@ export default function App(){
   const syncPkChk        = v => { setPkChk(v);        fbSet("pkChk", v); };
   const syncPackExtra    = v => { setPackExtra(v);    fbSet("packExtra", v); };
   const syncSched        = v => { setSched(v);        fbSet("sched", v); };
+  const syncFotoVotes  = v => { setFotoVotes(v);  fbSet("fotoVotes",v);   };
+  const syncMyFotoVote = v => { setMyFotoVote(v); fbSet("myFotoVote",v);  };
+  const syncAufgaben   = v => { setAufgaben(v);   fbSet("aufgaben",v);    };
 
   function addLied() {
     const s=newLiedSong.trim(), a=newLiedArtist.trim(), y=newLiedYr.trim();
@@ -387,12 +440,15 @@ export default function App(){
       <div style={{minHeight:"100vh",background:C.bg,fontFamily:"Nunito,sans-serif",color:C.tx,paddingBottom:80}}>
 
         {/* HERO */}
-        <div style={{position:"relative",height:tab==="home"?380:130,transition:"height .4s",overflow:"hidden"}}>
-          <img src={P25} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 60%"}}/>
-          <div style={{position:"absolute",inset:0,background:tab==="home"?"linear-gradient(to bottom,rgba(30,45,62,.05) 0%,rgba(30,45,62,.45) 55%,rgba(30,45,62,1) 100%)":"linear-gradient(to bottom,rgba(30,45,62,.5),rgba(30,45,62,.95))"}}/>
+        <div style={{position:"relative",height:tab==="home"?440:130,transition:"height .4s",overflow:"hidden"}}>
+          <img src={P25} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 75%"}}/>
+          <div style={{position:"absolute",inset:0,background:tab==="home"?"linear-gradient(to bottom,rgba(30,45,62,.6) 0%,rgba(30,45,62,.1) 25%,rgba(30,45,62,.05) 50%,rgba(30,45,62,.8) 85%,rgba(30,45,62,1) 100%)":"linear-gradient(to bottom,rgba(30,45,62,.5),rgba(30,45,62,.95))"}}/>
           <div style={{position:"absolute",top:tab==="home"?"12%":"50%",left:"50%",transform:"translate(-50%,-50%)",textAlign:"center",width:"100%"}}>
             <div style={{fontSize:tab==="home"?50:26,fontFamily:"Oswald,sans-serif",fontWeight:700,letterSpacing:tab==="home"?8:5,color:"#fff",textTransform:"uppercase",textShadow:"0 2px 20px rgba(0,0,0,.6)"}}>Daddy<span style={{color:G}}>camp</span></div>
-            {tab==="home" && <div style={{fontSize:12,letterSpacing:3,color:"rgba(255,255,255,.75)",textTransform:"uppercase",marginTop:4}}>Väter. Kinder. Legenden.</div>}
+            {tab==="home" && <div style={{fontSize:12,letterSpacing:3,color:"rgba(255,255,255,.75)",textTransform:"uppercase",marginTop:4}}>Väter. Kinder. Legenden.</div>
+            <button onClick={requestNotifPermission} style={{marginTop:8,background:"rgba(0,0,0,.3)",border:"1px solid rgba(255,255,255,.2)",borderRadius:20,padding:"3px 12px",fontSize:9,color:"rgba(255,255,255,.7)",cursor:"pointer",fontFamily:"Nunito,sans-serif",letterSpacing:1}}>
+              {typeof Notification !== "undefined" && Notification.permission === "granted" ? "🔔 Benachrichtigungen aktiv" : "🔕 Benachrichtigungen aktivieren"}
+            </button>}
           </div>
           {tab==="home" && <div style={{position:"absolute",bottom:18,left:"50%",transform:"translateX(-50%)",background:"rgba(30,45,62,.8)",border:"1px solid "+G,borderRadius:30,padding:"6px 20px",fontSize:12,fontWeight:700,letterSpacing:2,color:G,backdropFilter:"blur(10px)",whiteSpace:"nowrap"}}>04. - 06. September 2026</div>}
         </div>
@@ -520,7 +576,7 @@ export default function App(){
                   {DADS.map(dad => {
                     const done = tricountDone[dad];
                     return (
-                      <div key={dad} onClick={()=>syncTricountDone({...tricountDone,[dad]:!tricountDone[dad]})} style={{display:"flex",alignItems:"center",gap:3,padding:"2px 7px",borderRadius:20,background:done?"rgba(16,185,129,.18)":"transparent",cursor:"pointer"}}>
+                      <div key={dad} onClick={()=>(()=>{const v={...tricountDone,[dad]:!tricountDone[dad]};syncTricountDone(v);if(!tricountDone[dad])notify("Abrechnung",dad+" hat eingetragen & abgerechnet!");})()} style={{display:"flex",alignItems:"center",gap:3,padding:"2px 7px",borderRadius:20,background:done?"rgba(16,185,129,.18)":"transparent",cursor:"pointer"}}>
                         <span style={{fontSize:9,color:done?"#10B981":"rgba(255,255,255,.2)"}}>{done?"✓":"○"}</span>
                         <span style={{fontSize:10,fontWeight:done?700:400,color:done?"#10B981":C.tf}}>{dad}</span>
                       </div>
@@ -724,7 +780,7 @@ export default function App(){
                             )}
                             {wasAb2026 && <div style={{fontSize:10,color:"#F59E0B",fontWeight:600,marginBottom:6,padding:"5px 10px",background:"rgba(245,158,11,.1)",border:"1px solid rgba(245,158,11,.3)",borderRadius:8}}>ℹ️ War 2026 ausgebucht – für 2027 abstimmbar</div>}
                             {(
-                              <button onClick={()=>{if(myVote===d.id)return;syncDests(dests.map(x=>({...x,votes:x.id===d.id?x.votes+1:x.votes})));syncMyVote(d.id);}} style={{width:"100%",padding:"9px",borderRadius:9,background:isV?G:"rgba(212,146,10,.17)",border:"1px solid "+G,color:isV?"#1E2D3E":G,fontWeight:800,cursor:"pointer",fontSize:13,fontFamily:"Nunito,sans-serif"}}>{isV?"✓ Dein Votum für 2027":"Für 2027 stimmen"}</button>
+                              <button onClick={()=>{if(myVote===d.id)return;syncDests(dests.map(x=>({...x,votes:x.id===d.id?x.votes+1:x.votes})));syncMyVote(d.id);notify("Neue Abstimmung",d.name+" wurde gewählt");}} style={{width:"100%",padding:"9px",borderRadius:9,background:isV?G:"rgba(212,146,10,.17)",border:"1px solid "+G,color:isV?"#1E2D3E":G,fontWeight:800,cursor:"pointer",fontSize:13,fontFamily:"Nunito,sans-serif"}}>{isV?"✓ Dein Votum für 2027":"Für 2027 stimmen"}</button>
                             )}
                           </div>
                         </div>
@@ -912,7 +968,7 @@ export default function App(){
         {tab==="org" && (
           <div>
             <div style={{display:"flex",gap:7,marginBottom:16}}>
-              {[{id:"pack",l:"🎒 Packliste"},{id:"einkauf",l:"🛒 Einkauf"}].map(x => (
+              {[{id:"pack",l:"🎒 Packliste"},{id:"einkauf",l:"🛒 Einkauf"},{id:"aufgaben",l:"📋 Aufgaben"}].map(x => (
                 <button key={x.id} onClick={()=>setOrgTab(x.id)} style={{flex:1,padding:"8px 4px",borderRadius:10,border:"1px solid "+(orgTab===x.id?G:C.bo),background:orgTab===x.id?"rgba(212,146,10,.16)":C.bc,color:orgTab===x.id?G:C.tm,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{x.l}</button>
               ))}
             </div>
@@ -1011,11 +1067,62 @@ export default function App(){
           </div>
         )}
 
+        {/* ══ AUFGABEN ══ */}
+        {tab==="org" && orgTab==="aufgaben" && (
+          <div>
+            <div style={sT}>📋 Aufgaben am Camp</div>
+            <p style={{fontSize:12,color:C.tm,marginBottom:14}}>Wer macht was? Tippe zum Zuweisen.</p>
+            {aufgaben.map(a => {
+              const isAssigning = aufgabeAssigning===a.id;
+              return (
+                <div key={a.id} style={{background:a.done?"rgba(16,185,129,.1)":C.bc,border:"1px solid "+(a.done?"rgba(16,185,129,.4)":C.bo),borderRadius:14,padding:"12px 14px",marginBottom:9}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10}}>
+                    <div onClick={()=>syncAufgaben(aufgaben.map(x=>x.id!==a.id?x:{...x,done:!x.done}))} style={{width:22,height:22,borderRadius:6,border:"2px solid "+(a.done?"#10B981":C.bo),background:a.done?"#10B981":"transparent",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0}}>
+                      {a.done&&<span style={{color:"#fff",fontSize:11,fontWeight:900}}>✓</span>}
+                    </div>
+                    <span style={{fontSize:18}}>{a.icon}</span>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:13,fontWeight:700,color:a.done?C.tm:C.tx,textDecoration:a.done?"line-through":"none"}}>{a.title}</div>
+                      {a.assignee && <div style={{fontSize:10,color:C.tl,marginTop:2}}>👤 {a.assignee}</div>}
+                    </div>
+                    <button onClick={()=>setAufgabeAssigning(isAssigning?null:a.id)} style={{padding:"4px 10px",borderRadius:20,border:"1px solid "+(a.assignee?C.tl:C.bo),background:a.assignee?"rgba(16,185,129,.15)":"rgba(255,255,255,.07)",color:a.assignee?C.tl:C.tm,fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>
+                      {a.assignee?"✓ "+a.assignee:"Zuweisen"}
+                    </button>
+                  </div>
+                  {isAssigning && (
+                    <div style={{marginTop:10,background:"rgba(255,255,255,.06)",borderRadius:9,padding:"8px 10px"}}>
+                      <div style={{fontSize:10,color:C.tm,marginBottom:7,textTransform:"uppercase",letterSpacing:1}}>Wer übernimmt es?</div>
+                      <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
+                        {DADS.map(d=>(
+                          <button key={d} onClick={()=>{syncAufgaben(aufgaben.map(x=>x.id!==a.id?x:{...x,assignee:a.assignee===d?null:d}));setAufgabeAssigning(null);}} style={{padding:"4px 10px",borderRadius:20,border:"1px solid "+(a.assignee===d?C.tl:C.bo),background:a.assignee===d?"rgba(16,185,129,.2)":"rgba(255,255,255,.07)",color:a.assignee===d?C.tl:C.tx,fontSize:11,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{d}</button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+            <div style={{background:"rgba(255,255,255,.05)",border:"1px solid "+C.bl,borderRadius:12,padding:"10px 13px",marginTop:4}}>
+              <div style={{fontSize:9,color:C.tm,textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:7}}>Neue Aufgabe</div>
+              <div style={{display:"flex",gap:7}}>
+                <input value={newAufgabe} onChange={e=>setNewAufgabe(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&newAufgabe.trim()){syncAufgaben([...aufgaben,{id:"u"+Date.now(),title:newAufgabe.trim(),icon:"✅",assignee:null,done:false}]);setNewAufgabe("");}}} placeholder="Aufgabe eingeben..." style={{flex:1,background:"rgba(255,255,255,.09)",border:"1px solid "+C.bo,borderRadius:9,padding:"7px 10px",color:C.tx,fontSize:12,fontFamily:"Nunito,sans-serif",outline:"none"}}/>
+                <button onClick={()=>{if(newAufgabe.trim()){syncAufgaben([...aufgaben,{id:"u"+Date.now(),title:newAufgabe.trim(),icon:"✅",assignee:null,done:false}]);setNewAufgabe("");}}} style={{padding:"7px 14px",borderRadius:9,background:C.gd,border:"none",color:"#fff",fontWeight:800,cursor:"pointer",fontSize:12,fontFamily:"Nunito,sans-serif"}}>+</button>
+              </div>
+            </div>
+            <div style={{marginTop:10,display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 14px",background:"rgba(16,185,129,.08)",border:"1px solid rgba(16,185,129,.25)",borderRadius:10}}>
+              <div style={{fontSize:11,color:C.tm}}>{aufgaben.filter(a=>a.done).length}/{aufgaben.length} Aufgaben erledigt</div>
+              <div style={{height:6,width:120,background:"rgba(255,255,255,.1)",borderRadius:3,overflow:"hidden"}}>
+                <div style={{height:"100%",width:(aufgaben.filter(a=>a.done).length/Math.max(aufgaben.length,1)*100)+"%",background:C.tl,borderRadius:3,transition:"width .5s"}}/>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ══ FUN ═════════════════════════════════════════════ */}
         {tab==="fun" && (
           <div>
             <div style={{display:"flex",gap:5,marginBottom:16,flexWrap:"wrap"}}>
-              {[{id:"trophies",l:"🏆 Trophäen"},{id:"polls",l:"📢 Abstimmungen"},{id:"stats",l:"📊 Statistiken"},{id:"lied",l:"🎵 Lied"},{id:"ctr",l:"🍺 Verbrauch"}].map(x => (
+              {[{id:"trophies",l:"🏆 Trophäen"},{id:"polls",l:"📢 Abstimmungen"},{id:"stats",l:"📊 Statistiken"},{id:"chart",l:"📊 Diagramm"},{id:"foto",l:"📸 Foto-Vote"},{id:"lied",l:"🎵 Lied"},{id:"ctr",l:"🍺 Verbrauch"}].map(x => (
                 <button key={x.id} onClick={()=>setFunTab(x.id)} style={{padding:"6px 11px",borderRadius:9,border:"1px solid "+(funTab===x.id?G:C.bo),background:funTab===x.id?"rgba(212,146,10,.16)":C.bc,color:funTab===x.id?G:C.tm,fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{x.l}</button>
               ))}
             </div>
@@ -1065,9 +1172,9 @@ export default function App(){
                   );
                 })}
                 <div style={sC}>
-                  <input value={newQ} onChange={e=>setNewQ(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&newQ.trim()){syncPolls([...polls,{id:Date.now(),q:newQ.trim(),ja:0,nein:0}]);setNewQ("");}}}
+                  <input value={newQ} onChange={e=>setNewQ(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&newQ.trim()){syncPolls([...polls,{id:Date.now(),q:newQ.trim(),ja:0,nein:0}]);notify("Neue Abstimmung",newQ.trim());setNewQ("");}}}
  placeholder="Neue Abstimmungsfrage..." style={{width:"100%",background:"rgba(255,255,255,.09)",border:"1px solid "+C.bo,borderRadius:9,padding:"8px 12px",color:C.tx,fontSize:12,fontFamily:"Nunito,sans-serif",outline:"none",boxSizing:"border-box",marginBottom:7}}/>
-                  <button onClick={()=>{if(newQ.trim()){syncPolls([...polls,{id:Date.now(),q:newQ.trim(),ja:0,nein:0}]);setNewQ("");}}}
+                  <button onClick={()=>{if(newQ.trim()){syncPolls([...polls,{id:Date.now(),q:newQ.trim(),ja:0,nein:0}]);notify("Neue Abstimmung",newQ.trim());setNewQ("");}}}
  style={{width:"100%",padding:"8px",borderRadius:9,background:C.gd,border:"none",color:"#fff",fontWeight:800,cursor:"pointer",fontSize:12,fontFamily:"Nunito,sans-serif"}}>Abstimmung erstellen</button>
                 </div>
               </div>
@@ -1199,6 +1306,98 @@ export default function App(){
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* ── DIAGRAMM ── */}
+        {tab==="fun" && funTab==="chart" && (
+          <div>
+            <div style={sT}>📊 Teilnahmen visualisiert</div>
+            <p style={{fontSize:12,color:C.tm,marginBottom:14}}>Wer war wie oft dabei – 2019 bis 2025</p>
+            <div style={sC}>
+              {DADS.map(d => {
+                const cnt = STATS0.filter(s=>(att[s.yr]||s).who?.[d]).length;
+                const pct = Math.round(cnt/STATS0.length*100);
+                const color = cnt>=6?G:cnt>=4?"#10B981":cnt>=2?"#60A5FA":"rgba(255,255,255,.3)";
+                return (
+                  <div key={d} style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+                    <div style={{minWidth:68,fontSize:12,fontWeight:600}}>{d}</div>
+                    <div style={{flex:1,position:"relative"}}>
+                      <div style={{height:22,background:"rgba(255,255,255,.08)",borderRadius:5,overflow:"hidden"}}>
+                        <div style={{height:"100%",width:pct+"%",background:color,borderRadius:5,transition:"width .8s",display:"flex",alignItems:"center",paddingLeft:8}}>
+                          {pct>25&&<span style={{fontSize:10,fontWeight:800,color:"#1E2D3E"}}>{cnt}x</span>}
+                        </div>
+                      </div>
+                      {pct<=25&&<span style={{position:"absolute",left:"calc("+pct+"% + 6px)",top:"50%",transform:"translateY(-50%)",fontSize:10,fontWeight:700,color:color}}>{cnt}x</span>}
+                    </div>
+                    <div style={{minWidth:32,fontSize:10,color:C.tf,textAlign:"right"}}>{pct}%</div>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={sT}>🌦️ Wetterkarte der Jahre</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
+              {STATS0.map(s=>{
+                const wx=s.wx;
+                const emoji=wx.includes("Sonnig")||wx.includes("heiß")?"☀️":wx.includes("verregnet")||wx.includes("Regen")?"🌧️":wx.includes("Hitzesommer")?"🔥":wx.includes("Wechsel")?"⛅":"🌥️";
+                const tot=Object.keys(s.who).length+(s.ex||[]).length;
+                return(
+                  <div key={s.yr} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:12,padding:"10px 12px",display:"flex",alignItems:"center",gap:8}}>
+                    <div style={{fontSize:28}}>{emoji}</div>
+                    <div>
+                      <div style={{fontFamily:"Oswald,sans-serif",fontWeight:700,fontSize:16,color:G}}>{s.yr}</div>
+                      <div style={{fontSize:10,color:C.tm,marginTop:1}}>{wx}</div>
+                      <div style={{fontSize:9,color:C.tf,marginTop:1}}>{tot} Familien</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* ── FOTO-VOTE ── */}
+        {tab==="fun" && funTab==="foto" && (
+          <div>
+            <div style={sT}>📸 Foto-Abstimmung</div>
+            <p style={{fontSize:12,color:C.tm,marginBottom:14}}>Nach dem Camp: Jeder lädt sein Lieblingsfoto hoch, alle stimmen ab.</p>
+            {Object.keys(fotoVotes).length===0 && (
+              <div style={{textAlign:"center",padding:"28px 16px",background:C.bc,border:"1px solid "+C.bo,borderRadius:14,marginBottom:14}}>
+                <div style={{fontSize:40,marginBottom:8}}>📷</div>
+                <div style={{fontWeight:700,fontSize:14,marginBottom:4}}>Noch keine Fotos</div>
+                <div style={{fontSize:12,color:C.tm}}>Nach dem Camp können alle ihr Lieblingsfoto hochladen.</div>
+              </div>
+            )}
+            {Object.entries(fotoVotes).sort((a,b)=>b[1].votes.length-a[1].votes.length).map(([id,foto])=>{
+              const hasVoted=myFotoVote!==null;
+              const isMyVote=myFotoVote===id;
+              return(
+                <div key={id} style={{background:isMyVote?"rgba(212,146,10,.14)":C.bc,border:"1px solid "+(isMyVote?G:C.bo),borderRadius:14,overflow:"hidden",marginBottom:12}}>
+                  {foto.url&&<img src={foto.url} alt="" style={{width:"100%",maxHeight:200,objectFit:"cover",display:"block"}} onError={e=>e.target.style.display="none"}/>}
+                  <div style={{padding:"10px 13px"}}>
+                    {foto.caption&&<div style={{fontSize:12,fontStyle:"italic",color:C.tm,marginBottom:7}}>"{foto.caption}"</div>}
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                      <div style={{fontSize:11,color:C.tf}}>von {foto.submittedBy} · {foto.votes.length} Stimme{foto.votes.length!==1?"n":""}</div>
+                      <button onClick={()=>{if(hasVoted)return;const up={...fotoVotes,[id]:{...foto,votes:[...foto.votes,"vote"]}};syncFotoVotes(up);syncMyFotoVote(id);}} style={{padding:"5px 14px",borderRadius:20,background:isMyVote?G:"rgba(212,146,10,.17)",border:"1px solid "+G,color:isMyVote?"#1E2D3E":G,fontWeight:800,cursor:hasVoted?"default":"pointer",fontSize:11,fontFamily:"Nunito,sans-serif",opacity:hasVoted&&!isMyVote?.5:1}}>
+                        {isMyVote?"★ Mein Votum":"Abstimmen"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            <div style={{...sC,background:"rgba(212,146,10,.08)",border:"1px solid rgba(212,146,10,.3)"}}>
+              <div style={{fontWeight:800,fontSize:12,color:G,marginBottom:10}}>📤 Foto hinzufügen</div>
+              <div style={{fontSize:11,color:C.tm,marginBottom:10}}>Bild-URL einfügen (iCloud, Google Photos, Dropbox etc.):</div>
+              <input id="fotoUrl" placeholder="https://... (direkte Bild-URL)" style={{width:"100%",background:"rgba(255,255,255,.09)",border:"1px solid "+C.bo,borderRadius:9,padding:"8px 10px",color:C.tx,fontSize:12,fontFamily:"Nunito,sans-serif",outline:"none",boxSizing:"border-box",marginBottom:7}}/>
+              <input value={newFotoCaption} onChange={e=>setNewFotoCaption(e.target.value)} placeholder="Bildunterschrift (optional)..." style={{width:"100%",background:"rgba(255,255,255,.09)",border:"1px solid "+C.bo,borderRadius:9,padding:"8px 10px",color:C.tx,fontSize:12,fontFamily:"Nunito,sans-serif",outline:"none",boxSizing:"border-box",marginBottom:7}}/>
+              <div style={{display:"flex",gap:7}}>
+                <select id="fotoWho" style={{flex:1,background:"rgba(255,255,255,.09)",border:"1px solid "+C.bo,borderRadius:9,padding:"8px 10px",color:C.tx,fontSize:12,fontFamily:"Nunito,sans-serif",outline:"none"}}>
+                  {DADS.map(d=><option key={d} value={d}>{d}</option>)}
+                </select>
+                <button onClick={()=>{const url=document.getElementById("fotoUrl")?.value?.trim();const who=document.getElementById("fotoWho")?.value||"Unbekannt";if(!url)return;const id="f"+Date.now();syncFotoVotes({...fotoVotes,[id]:{url,caption:newFotoCaption.trim(),submittedBy:who,votes:[]}});setNewFotoCaption("");const el=document.getElementById("fotoUrl");if(el)el.value="";}} style={{padding:"8px 16px",borderRadius:9,background:C.gd,border:"none",color:"#fff",fontWeight:800,cursor:"pointer",fontSize:12,fontFamily:"Nunito,sans-serif"}}>Hochladen</button>
+              </div>
+            </div>
           </div>
         )}
 
