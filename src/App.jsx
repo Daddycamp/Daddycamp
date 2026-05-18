@@ -267,87 +267,7 @@ export default function App(){
     }
   };
 
-  // ── Push Notifications ─────────────────────────────────────────────────────
-  const notify = (title, body) => {
-    if (typeof Notification === "undefined") return;
-    if (Notification.permission === "granted") {
-      new Notification("⛺ Daddycamp – " + title, { body, icon: "/tent.svg" });
-    } else if (Notification.permission !== "denied") {
-      Notification.requestPermission().then(p => {
-        if (p === "granted") new Notification("⛺ Daddycamp – " + title, { body, icon: "/tent.svg" });
-      });
-    }
-  };
-  const requestNotifPermission = () => {
-    if (typeof Notification !== "undefined" && Notification.permission === "default") {
-      Notification.requestPermission();
-    }
-  };
 
-  // ── Firebase realtime listeners ────────────────────────────────────────────
-  const isMounted = useRef(true);
-  useEffect(() => {
-    isMounted.current = true;
-    const unsubs = [];
-    const listen = (key, setter) => {
-      const u = onValue(fbRef(db, "daddycamp/" + key), snap => {
-        if (!isMounted.current) return;
-        const v = snap.val();
-        if (v !== null && v !== undefined) setter(v);
-      }, err => console.warn("FB read:", key, err));
-      unsubs.push(u);
-    };
-    listen("fams",         setFams);
-    // dests votes are session-local (not synced) - each user votes fresh
-    listen("myVote",       setMyVote);
-    listen("asgn",         setAsgn);
-    listen("shops",        setShops);
-    listen("shopExtras",   setShopExtras);
-    listen("polls",        setPolls);
-    listen("tVotes",       setTVotes);
-    listen("myTV",         setMyTV);
-    listen("ctrs",         setCtrs);
-    listen("custCtrs",     setCustCtrs);
-    listen("lieder",       setLieder);
-    listen("tricountDone", setTricountDone);
-    listen("att",          setAtt);
-    listen("pkChk",        setPkChk);
-    listen("packExtra",    setPackExtra);
-    listen("sched",      setSched);
-    listen("fotoVotes",  setFotoVotes);
-    listen("myFotoVote", setMyFotoVote);
-    listen("aufgaben",   setAufgaben);
-    return () => { isMounted.current = false; unsubs.forEach(u => u()); };
-  }, []);
-
-  // ── Helpers ──────────────────────────────────────────────
-  const aKey = item => item.replace(/[^a-zA-Z0-9]/g,"_");
-  const getA  = item => asgn[aKey(item)] || [];
-  const togA  = (item,dad) => {
-    const k = aKey(item);
-    const cur = asgn[k] || [];
-    syncAsgn({...asgn, [k]: cur.includes(dad) ? cur.filter(d=>d!==dad) : [...cur,dad]});
-  };
-  const delShopItem = (item, isExtra) => {
-    if(isExtra) syncShopExtras(shopExtras.filter(e => e.n !== item));
-    else syncShops(shops.map(g => ({...g, items: g.items.filter(i => i !== item)})));
-    const k = aKey(item);
-    const newAsgn={...asgn}; delete newAsgn[k]; syncAsgn(newAsgn);;
-    if(openAsgn===item) setOpenAsgn(null);
-    setDelConf(null);
-  };
-
-  const allShopItems = [...shops.flatMap(g=>g.items), ...shopExtras.map(e=>e.n)];
-  const unassigned   = allShopItems.filter(i => getA(i).length===0);
-  const dadItems     = dad => allShopItems.filter(i => getA(i).includes(dad));
-
-  const tD = fams.length;
-  const tK = fams.reduce((s,f) => s+f.kids.length, 0);
-  const cD = fams.filter(f => f.dSt==="yes").length;
-  const cK = fams.reduce((s,f) => s+f.kids.filter(k=>k.st==="yes").length, 0);
-  const rC = fams.filter(f => f.reg && f.paid).length;
-  const boys  = fams.reduce((s,f) => s+f.kids.filter(k=>k.g==="👦").length, 0);
-  const girls = fams.reduce((s,f) => s+f.kids.filter(k=>k.g==="👧").length, 0);
 
   // ── Synced setters ──────────────────────────────────────────────────────
   const syncFams         = v => { setFams(v);         fbSet("fams", v); };
@@ -445,10 +365,12 @@ export default function App(){
           <div style={{position:"absolute",inset:0,background:tab==="home"?"linear-gradient(to bottom,rgba(30,45,62,.6) 0%,rgba(30,45,62,.1) 25%,rgba(30,45,62,.05) 50%,rgba(30,45,62,.8) 85%,rgba(30,45,62,1) 100%)":"linear-gradient(to bottom,rgba(30,45,62,.5),rgba(30,45,62,.95))"}}/>
           <div style={{position:"absolute",top:tab==="home"?"12%":"50%",left:"50%",transform:"translate(-50%,-50%)",textAlign:"center",width:"100%"}}>
             <div style={{fontSize:tab==="home"?50:26,fontFamily:"Oswald,sans-serif",fontWeight:700,letterSpacing:tab==="home"?8:5,color:"#fff",textTransform:"uppercase",textShadow:"0 2px 20px rgba(0,0,0,.6)"}}>Daddy<span style={{color:G}}>camp</span></div>
-            {tab==="home" && <div style={{fontSize:12,letterSpacing:3,color:"rgba(255,255,255,.75)",textTransform:"uppercase",marginTop:4}}>Väter. Kinder. Legenden.</div>
-            <button onClick={requestNotifPermission} style={{marginTop:8,background:"rgba(0,0,0,.3)",border:"1px solid rgba(255,255,255,.2)",borderRadius:20,padding:"3px 12px",fontSize:9,color:"rgba(255,255,255,.7)",cursor:"pointer",fontFamily:"Nunito,sans-serif",letterSpacing:1}}>
-              {typeof Notification !== "undefined" && Notification.permission === "granted" ? "🔔 Benachrichtigungen aktiv" : "🔕 Benachrichtigungen aktivieren"}
-            </button>}
+            {tab==="home" && <>
+              <div style={{fontSize:12,letterSpacing:3,color:"rgba(255,255,255,.75)",textTransform:"uppercase",marginTop:4}}>Väter. Kinder. Legenden.</div>
+              <button onClick={requestNotifPermission} style={{marginTop:8,background:"rgba(0,0,0,.3)",border:"1px solid rgba(255,255,255,.2)",borderRadius:20,padding:"3px 12px",fontSize:9,color:"rgba(255,255,255,.7)",cursor:"pointer",fontFamily:"Nunito,sans-serif",letterSpacing:1}}>
+                {typeof Notification !== "undefined" && Notification.permission === "granted" ? "🔔 Aktiv" : "🔕 Benachrichtigungen"}
+              </button>
+            </>}
           </div>
           {tab==="home" && <div style={{position:"absolute",bottom:18,left:"50%",transform:"translateX(-50%)",background:"rgba(30,45,62,.8)",border:"1px solid "+G,borderRadius:30,padding:"6px 20px",fontSize:12,fontWeight:700,letterSpacing:2,color:G,backdropFilter:"blur(10px)",whiteSpace:"nowrap"}}>04. - 06. September 2026</div>}
         </div>
