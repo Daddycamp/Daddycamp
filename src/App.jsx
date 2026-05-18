@@ -161,7 +161,7 @@ const LIEDER0 = [
 
 const TROPHIES = ["Grillmeister","Mutigster Kletterer","Frühschläfer-Award","Stimmungskanone","Bester Fotograf","Kids-Held"];
 const CTRS0 = [{key:"bier",label:"Bierkisten",unit:"Kisten"},{key:"wein",label:"Weinflaschen",unit:"Fl."},{key:"sekt",label:"Sektflaschen",unit:"Fl."},{key:"hard",label:"Harter Stoff",unit:"Fl."},{key:"fleisch",label:"Fleischstücke",unit:"Stk."}];
-const POLLS0 = [{id:1,q:"Samstagsausflug um 10 Uhr?",ja:0,nein:0},{id:2,q:"Fruehstueck am Sonntag gemeinsam?",ja:0,nein:0}];
+const POLLS0 = [{id:1,q:"Samstagsausflug um 10 Uhr?",ja:0,nein:0},{id:2,q:"Frühstück am Sonntag gemeinsam?",ja:0,nein:0}];
 
 const ST = {
   yes:  {l:"Dabei", s:"✓", bg:"rgba(16,185,129,.18)", c:"#10B981", b:"rgba(16,185,129,.4)"},
@@ -251,7 +251,7 @@ export default function App(){
       unsubs.push(u);
     };
     listen("fams",         setFams);
-    listen("dests",        setDests);
+    // dests votes are session-local (not synced) - each user votes fresh
     listen("myVote",       setMyVote);
     listen("asgn",         setAsgn);
     listen("shops",        setShops);
@@ -301,7 +301,7 @@ export default function App(){
 
   // ── Synced setters ──────────────────────────────────────────────────────
   const syncFams         = v => { setFams(v);         fbSet("fams", v); };
-  const syncDests        = v => { setDests(v);        fbSet("dests", v); };
+  const syncDests  = v => { setDests(v); /* votes local */ };
   const syncMyVote       = v => { setMyVote(v);       fbSet("myVote", v); };
   const syncAsgn         = v => { setAsgn(v);         fbSet("asgn", v); };
   const syncShops        = v => { setShops(v);        fbSet("shops", v); };
@@ -388,9 +388,9 @@ export default function App(){
 
         {/* HERO */}
         <div style={{position:"relative",height:tab==="home"?380:130,transition:"height .4s",overflow:"hidden"}}>
-          <img src={P25} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center center"}}/>
+          <img src={P25} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 60%"}}/>
           <div style={{position:"absolute",inset:0,background:tab==="home"?"linear-gradient(to bottom,rgba(30,45,62,.05) 0%,rgba(30,45,62,.45) 55%,rgba(30,45,62,1) 100%)":"linear-gradient(to bottom,rgba(30,45,62,.5),rgba(30,45,62,.95))"}}/>
-          <div style={{position:"absolute",top:tab==="home"?"22%":"50%",left:"50%",transform:"translate(-50%,-50%)",textAlign:"center",width:"100%"}}>
+          <div style={{position:"absolute",top:tab==="home"?"12%":"50%",left:"50%",transform:"translate(-50%,-50%)",textAlign:"center",width:"100%"}}>
             <div style={{fontSize:tab==="home"?50:26,fontFamily:"Oswald,sans-serif",fontWeight:700,letterSpacing:tab==="home"?8:5,color:"#fff",textTransform:"uppercase",textShadow:"0 2px 20px rgba(0,0,0,.6)"}}>Daddy<span style={{color:G}}>camp</span></div>
             {tab==="home" && <div style={{fontSize:12,letterSpacing:3,color:"rgba(255,255,255,.75)",textTransform:"uppercase",marginTop:4}}>Väter. Kinder. Legenden.</div>}
           </div>
@@ -503,16 +503,7 @@ export default function App(){
             </div>
 
             {/* Zielort */}
-            <div style={sC}>
-              <div style={sT}>📍 Zielort 2026</div>
-              <div style={{display:"flex",alignItems:"center",gap:10}}>
-                <div style={{fontSize:24}}>🌲</div>
-                <div>
-                  <div style={{fontSize:14,fontWeight:800,color:C.tl}}>Westerwald – Schönerlen</div>
-                  <div style={{fontSize:11,color:C.tm,marginTop:1}}>Einstimmig gewählt · 11/11 Stimmen</div>
-                </div>
-              </div>
-            </div>
+            
 
             {/* Tricount */}
             <div style={{background:"linear-gradient(135deg,rgba(212,146,10,.18),rgba(212,146,10,.05))",border:"1px solid "+G,borderRadius:14,padding:"14px 16px",marginBottom:0}}>
@@ -832,58 +823,7 @@ export default function App(){
                 </div>
               </div>
             )}
-              <div>
-                <div style={sT}>📅 Ablaufplan</div>
-                {sched.map(day => (
-                  <div key={day.day} style={{marginBottom:22}}>
-                    <div style={{fontSize:12,fontWeight:800,textTransform:"uppercase",letterSpacing:2,color:G,marginBottom:10,paddingBottom:7,borderBottom:"1px solid rgba(212,146,10,.28)"}}>{day.e} {day.day}</div>
-                    <div style={{position:"relative",paddingLeft:20}}>
-                      <div style={{position:"absolute",left:6,top:3,bottom:3,width:2,background:C.bl,borderRadius:2}}/>
-                      {day.slots.map((s,i) => (
-                        <div key={i} style={{display:"flex",gap:12,marginBottom:10,position:"relative"}}>
-                          <div style={{position:"absolute",left:-17,top:7,width:9,height:9,borderRadius:"50%",background:G,border:"2px solid "+C.bg}}/>
-                          {editSlot===s.id ? (
-                            <div style={{display:"flex",gap:6,flex:1,alignItems:"center"}}>
-                              <input value={editVal.t} onChange={e=>setEditVal(p=>({...p,t:e.target.value}))} style={{width:52,background:"rgba(255,255,255,.12)",border:"1px solid "+G,borderRadius:7,padding:"6px 7px",color:C.tx,fontSize:11,fontFamily:"Nunito,sans-serif",outline:"none"}}/>
-                              <input value={editVal.l} onChange={e=>setEditVal(p=>({...p,l:e.target.value}))} style={{flex:1,background:"rgba(255,255,255,.12)",border:"1px solid "+G,borderRadius:7,padding:"6px 9px",color:C.tx,fontSize:11,fontFamily:"Nunito,sans-serif",outline:"none"}} onKeyDown={e=>{if(e.key==="Enter"){syncSched(sched.map(d=>({...d,slots:d.slots.map(sl=>sl.id===s.id?{...sl,t:editVal.t,l:editVal.l}:sl)})));setEditSlot(null);}}}/>
-                              <button onClick={()=>{syncSched(sched.map(d=>({...d,slots:d.slots.map(sl=>sl.id===s.id?{...sl,t:editVal.t,l:editVal.l}:sl)})));setEditSlot(null);}} style={{width:28,height:28,borderRadius:7,border:"none",background:C.tl,color:"#fff",cursor:"pointer",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,flexShrink:0}}>✓</button>
-                              <button onClick={()=>setEditSlot(null)} style={{width:28,height:28,borderRadius:7,border:"1px solid "+C.bo,background:"transparent",color:C.tm,cursor:"pointer",fontFamily:"Nunito,sans-serif",fontSize:12,flexShrink:0}}>✕</button>
-                            </div>
-                          ) : (
-                            <div style={{display:"flex",gap:10,flex:1,alignItems:"center"}}>
-                              <div style={{minWidth:40,fontSize:11,color:G,fontWeight:700}}>{s.t}</div>
-                              <div onClick={()=>{setEditSlot(s.id);setEditVal({t:s.t,l:s.l});}} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:10,padding:"8px 12px",flex:1,display:"flex",alignItems:"center",gap:9,cursor:"pointer"}}>
-                                <span style={{fontSize:16}}>{s.i}</span><span style={{fontSize:13,flex:1}}>{s.l}</span><span style={{fontSize:9,color:C.tf}}>✏️</span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-                <div style={sT}>🗺️ Ausflugsziele 2026 – Westerwald</div>
-                {(AUSFLUGS[2]||[]).map((a,i) => {
-                  const isO = expAusfl===i;
-                  return (
-                    <div key={i} style={{marginBottom:8}}>
-                      <div onClick={()=>setExpAusfl(isO?null:i)} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:isO?"14px 14px 0 0":14,padding:"11px 13px",cursor:"pointer"}}>
-                        <div style={{display:"flex",alignItems:"center",gap:10}}><span style={{fontSize:22}}>{a.e}</span><div style={{flex:1}}><div style={{fontWeight:800,fontSize:12}}>{a.n}</div><div style={{fontSize:10,color:C.tm}}>{a.t} · {a.d}</div></div><span style={{fontSize:9,color:C.tf}}>{isO?"▲":"▼"}</span></div>
-                      </div>
-                      {isO && <div style={{background:C.bgL,border:"1px solid "+C.bo,borderTop:"none",borderRadius:"0 0 14px 14px",padding:"10px 13px"}}><a href={a.url} target="_blank" rel="noreferrer" style={{fontSize:10,color:G,fontWeight:700,textDecoration:"none",background:"rgba(212,146,10,.12)",border:"1px solid "+G,borderRadius:7,padding:"5px 12px"}}>In Maps öffnen →</a></div>}
-                    </div>
-                  );
-                })}
-                <div style={{...sT,marginTop:8}}>🌿 Stockbrot am Lagerfeuer</div>
-                <div style={sC}>
-                  {[{i:"🌾",l:"Zutaten",xs:["500g Mehl","1 Päckchen Hefe","1 TL Salz","1 TL Zucker","300ml Wasser","3 EL Olivenöl"]},{i:"👨‍🍳",l:"Zubereitung",xs:["Mehl, Hefe, Salz & Zucker mischen","Wasser & Öl dazugeben, 5 Min. kneten","30 Min. ruhen lassen","Spiralförmig um Stöcke wickeln","Über Glut 10-15 Min. backen"]},{i:"💡",l:"Tipps",xs:["Stöcke schälen & wässern","Über Glut – nicht Flamme!","Fertig wenn hohl klingt"]}].map(sec => (
-                    <div key={sec.l} style={{marginBottom:12}}>
-                      <div style={{fontSize:11,fontWeight:800,color:G,marginBottom:5}}>{sec.i} {sec.l}</div>
-                      {sec.xs.map((x,i) => <div key={i} style={{fontSize:12,color:C.tm,padding:"2px 0",borderBottom:"1px solid "+C.bl,display:"flex",gap:7}}><span style={{color:C.tf,minWidth:14}}>{i+1}.</span><span>{x}</span></div>)}
-                    </div>
-                  ))}
-                </div>
-              </div>
+
 
             {/* PLAN SUB-TAB */}
             {ausflugTab==="plan" && (
@@ -929,15 +869,7 @@ export default function App(){
                     </div>
                   );
                 })}
-                <div style={{...sT,marginTop:8}}>🌿 Stockbrot am Lagerfeuer</div>
-                <div style={sC}>
-                  {[{i:"🌾",l:"Zutaten",xs:["500g Mehl","1 Päckchen Hefe","1 TL Salz","1 TL Zucker","300ml Wasser","3 EL Olivenöl"]},{i:"👨‍🍳",l:"Zubereitung",xs:["Mehl, Hefe, Salz & Zucker mischen","Wasser & Öl dazugeben, 5 Min. kneten","30 Min. ruhen lassen","Spiralförmig um Stöcke wickeln","Über Glut 10-15 Min. backen"]},{i:"💡",l:"Tipps",xs:["Stöcke schälen & wässern","Über Glut – nicht Flamme!","Fertig wenn hohl klingt"]}].map(sec => (
-                    <div key={sec.l} style={{marginBottom:12}}>
-                      <div style={{fontSize:11,fontWeight:800,color:G,marginBottom:5}}>{sec.i} {sec.l}</div>
-                      {sec.xs.map((x,i) => <div key={i} style={{fontSize:12,color:C.tm,padding:"2px 0",borderBottom:"1px solid "+C.bl,display:"flex",gap:7}}><span style={{color:C.tf,minWidth:14}}>{i+1}.</span><span>{x}</span></div>)}
-                    </div>
-                  ))}
-                </div>
+                
               </div>
             )}
           </div>
