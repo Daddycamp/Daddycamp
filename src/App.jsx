@@ -531,7 +531,7 @@ export default function App(){
                   {DADS.map(dad => {
                     const done = tricountDone[dad];
                     return (
-                      <div key={dad} onClick={()=>(()=>{const v={...tricountDone,[dad]:!tricountDone[dad]};syncTricountDone(v);if(!tricountDone[dad])notify("Abrechnung",dad+" hat eingetragen & abgerechnet!");})()} style={{display:"flex",alignItems:"center",gap:3,padding:"2px 7px",borderRadius:20,background:done?"rgba(16,185,129,.18)":"transparent",cursor:"pointer"}}>
+                      <div key={dad} onClick={()=>{const v={...tricountDone,[dad]:!tricountDone[dad]};syncTricountDone(v);if(!tricountDone[dad])notify("Abrechnung",dad+" hat eingetragen & abgerechnet!");}} style={{display:"flex",alignItems:"center",gap:3,padding:"2px 7px",borderRadius:20,background:done?"rgba(16,185,129,.18)":"transparent",cursor:"pointer"}}>
                         <span style={{fontSize:9,color:done?"#10B981":"rgba(255,255,255,.2)"}}>{done?"✓":"○"}</span>
                         <span style={{fontSize:10,fontWeight:done?700:400,color:done?"#10B981":C.tf}}>{dad}</span>
                       </div>
