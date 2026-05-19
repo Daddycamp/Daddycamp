@@ -254,6 +254,39 @@ export default function App(){
 
   const fbSet = (key, val) => set(fbRef(db, "daddycamp/" + key), val).catch(e => console.error("FB:", e));
 
+  // ── Firebase realtime listeners ────────────────────────────────────────────
+  useEffect(() => {
+    const unsubs = [];
+    const listen = (key, setter) => {
+      const u = onValue(fbRef(db, "daddycamp/" + key), snap => {
+        const v = snap.val();
+        if (v !== null && v !== undefined) setter(v);
+      }, err => console.warn("FB:", key, err));
+      unsubs.push(u);
+    };
+    listen("fams",         setFams);
+    listen("dests",        setDests);
+    listen("myVote",       setMyVote);
+    listen("asgn",         setAsgn);
+    listen("shops",        setShops);
+    listen("shopExtras",   setShopExtras);
+    listen("polls",        setPolls);
+    listen("tVotes",       setTVotes);
+    listen("myTV",         setMyTV);
+    listen("ctrs",         setCtrs);
+    listen("custCtrs",     setCustCtrs);
+    listen("lieder",       setLieder);
+    listen("tricountDone", setTricountDone);
+    listen("att",          setAtt);
+    listen("pkChk",        setPkChk);
+    listen("packExtra",    setPackExtra);
+    listen("sched",        setSched);
+    listen("fotoVotes",    setFotoVotes);
+    listen("myFotoVote",   setMyFotoVote);
+    listen("aufgaben",     setAufgaben);
+    return () => unsubs.forEach(u => u());
+  }, []);
+
   // ── Push Notifications ─────────────────────────────────────────────────────
   const notify = (title, body) => {
     if (typeof Notification === "undefined") return;
