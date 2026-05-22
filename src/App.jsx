@@ -998,7 +998,7 @@ export default function App(){
         {tab==="fun" && (
           <div>
             <div style={{display:"flex",gap:5,marginBottom:16,flexWrap:"wrap"}}>
-              {[{id:"trophies",l:"🏆 Trophäen"},{id:"polls",l:"📢 Abstimmungen"},{id:"stats",l:"📊 Statistiken"},{id:"chart",l:"📊 Diagramm"},{id:"lied",l:"🎵 Lied"},{id:"ctr",l:"🍺 Verbrauch"}].map(x => (
+              {[{id:"trophies",l:"🏆 Trophäen"},{id:"polls",l:"📢 Abstimmungen"},{id:"teilnahme",l:"📊 Teilnahme"},{id:"lied",l:"🎵 Lied"},{id:"ctr",l:"🍺 Verbrauch"}].map(x => (
                 <button key={x.id} onClick={()=>setFunTab(x.id)} style={{padding:"6px 11px",borderRadius:9,border:"1px solid "+(funTab===x.id?G:C.bo),background:funTab===x.id?"rgba(212,146,10,.16)":C.bc,color:funTab===x.id?G:C.tm,fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{x.l}</button>
               ))}
             </div>
@@ -1061,9 +1061,9 @@ export default function App(){
               </div>
             )}
 
-            {funTab==="stats" && (
+            {funTab==="teilnahme" && (
               <div>
-                <div style={sT}>📊 Daddycamp Statistiken</div>
+                <div style={sT}>📅 Jahresrückblick</div>
                 {STATS0.map(s => {
                   const yd = att[s.yr] || {who:{},ex:[]};
                   const tot = DADS.filter(d=>yd.who[d]).length + (yd.ex||[]).length;
@@ -1116,6 +1116,28 @@ export default function App(){
                     );
                   })}
                 </div>
+              </div>
+
+              <div style={sT}>🌦️ Wetterkarte</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
+                {STATS0.map(s => {
+                  const wx = s.wx;
+                  const emoji = wx.includes("Sonnig")||wx.includes("heiß") ? "☀️"
+                              : wx.includes("verregnet")||wx.includes("Regen") ? "🌧️"
+                              : wx.includes("Hitzesommer") ? "🔥"
+                              : wx.includes("Wechsel") ? "⛅" : "🌥️";
+                  const tot = Object.keys(s.who).length + (s.ex||[]).length;
+                  return (
+                    <div key={s.yr} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:12,padding:"10px 12px",display:"flex",alignItems:"center",gap:10}}>
+                      <div style={{fontSize:26,lineHeight:1}}>{emoji}</div>
+                      <div>
+                        <div style={{fontFamily:"Oswald,sans-serif",fontWeight:700,fontSize:15,color:G,lineHeight:1}}>{s.yr}</div>
+                        <div style={{fontSize:10,color:C.tm,marginTop:2}}>{wx}</div>
+                        <div style={{fontSize:9,color:C.tf,marginTop:1}}>{tot} Familien</div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
 
@@ -1187,64 +1209,6 @@ export default function App(){
                 </div>
               </div>
             )}
-          </div>
-        )}
-
-        {/* ══ DIAGRAMM ══ */}
-        {tab==="fun" && funTab==="chart" && (
-          <div>
-            <div style={sT}>📊 Teilnahmen 2019–2025</div>
-            <p style={{fontSize:12,color:C.tm,marginBottom:14}}>Wer war wie oft dabei?</p>
-            <div style={sC}>
-              {DADS.map(d => {
-                const cnt = STATS0.filter(s => (att[s.yr]||s).who?.[d]).length;
-                const pct = Math.round(cnt / STATS0.length * 100);
-                const color = cnt >= 6 ? G : cnt >= 4 ? "#10B981" : cnt >= 2 ? "#60A5FA" : "rgba(255,255,255,.25)";
-                return (
-                  <div key={d} style={{display:"flex",alignItems:"center",gap:10,marginBottom:11}}>
-                    <div style={{minWidth:64,fontSize:12,fontWeight:600,color:C.tx}}>{d}</div>
-                    <div style={{flex:1,position:"relative",height:22}}>
-                      <div style={{position:"absolute",inset:0,background:"rgba(255,255,255,.08)",borderRadius:5}}/>
-                      <div style={{position:"absolute",top:0,left:0,height:"100%",width:pct+"%",background:color,borderRadius:5,transition:"width .8s",display:"flex",alignItems:"center",paddingLeft:7}}>
-                        {pct > 25 && <span style={{fontSize:10,fontWeight:800,color:"#1E2D3E"}}>{cnt}x</span>}
-                      </div>
-                      {pct <= 25 && <span style={{position:"absolute",left:"calc("+pct+"% + 6px)",top:"50%",transform:"translateY(-50%)",fontSize:10,fontWeight:700,color:color}}>{cnt}x</span>}
-                    </div>
-                    <div style={{minWidth:32,fontSize:10,color:C.tf,textAlign:"right"}}>{pct}%</div>
-                  </div>
-                );
-              })}
-              <div style={{marginTop:10,display:"flex",gap:12,flexWrap:"wrap"}}>
-                {[{c:G,l:"6–7x dabei"},{c:"#10B981",l:"4–5x"},{c:"#60A5FA",l:"2–3x"},{c:"rgba(255,255,255,.25)",l:"0–1x"}].map(x=>(
-                  <div key={x.l} style={{display:"flex",alignItems:"center",gap:5}}>
-                    <div style={{width:10,height:10,borderRadius:2,background:x.c}}/>
-                    <span style={{fontSize:10,color:C.tm}}>{x.l}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div style={sT}>🌦️ Wetterkarte der Jahre</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
-              {STATS0.map(s => {
-                const wx = s.wx;
-                const emoji = wx.includes("Sonnig")||wx.includes("heiß") ? "☀️"
-                            : wx.includes("verregnet")||wx.includes("Regen") ? "🌧️"
-                            : wx.includes("Hitzesommer") ? "🔥"
-                            : wx.includes("Wechsel") ? "⛅" : "🌥️";
-                const tot = Object.keys(s.who).length + (s.ex||[]).length;
-                return (
-                  <div key={s.yr} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:12,padding:"10px 12px",display:"flex",alignItems:"center",gap:10}}>
-                    <div style={{fontSize:28,lineHeight:1}}>{emoji}</div>
-                    <div>
-                      <div style={{fontFamily:"Oswald,sans-serif",fontWeight:700,fontSize:16,color:G,lineHeight:1}}>{s.yr}</div>
-                      <div style={{fontSize:10,color:C.tm,marginTop:2}}>{wx}</div>
-                      <div style={{fontSize:9,color:C.tf,marginTop:1}}>{tot} Familien · {s.loc.split(" - ")[0]}</div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
           </div>
         )}
 
