@@ -1029,11 +1029,11 @@ export default function App(){
                     </div>
                   );
                 })}
-              </div>
-              <div style={{marginTop:10,display:"flex",justifyContent:"center"}}>
-                <button onClick={()=>{if(window.confirm("Alle Trophäen-Vergaben zurücksetzen?")){syncTVotes({});syncMyTV({});}}} style={{padding:"7px 18px",borderRadius:20,border:"1px solid rgba(239,68,68,.4)",background:"rgba(239,68,68,.08)",color:"rgba(239,68,68,.8)",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>
-                  🔄 Vergabe zurücksetzen
-                </button>
+                <div style={{marginTop:10,display:"flex",justifyContent:"center"}}>
+                  <button onClick={()=>{if(window.confirm("Alle Trophäen-Vergaben zurücksetzen?")){syncTVotes({});syncMyTV({});}}} style={{padding:"7px 18px",borderRadius:20,border:"1px solid rgba(239,68,68,.4)",background:"rgba(239,68,68,.08)",color:"rgba(239,68,68,.8)",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>
+                    🔄 Vergabe zurücksetzen
+                  </button>
+                </div>
               </div>
             )}
 
