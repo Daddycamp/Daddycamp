@@ -503,41 +503,27 @@ export default function App(){
             </div>
 
             {/* Tricount */}
-            {(()=>{
-              const campStarted = new Date() >= TOUR;
-              if (!campStarted) return (
-                <div style={{background:"rgba(212,146,10,.07)",border:"1px solid rgba(212,146,10,.25)",borderRadius:14,padding:"12px 16px",display:"flex",alignItems:"center",gap:12}}>
-                  <div style={{fontSize:24}}>💰</div>
-                  <div>
-                    <div style={{fontWeight:800,fontSize:13,color:G}}>Endabrechnung 2026</div>
-                    <div style={{fontSize:11,color:C.tm,marginTop:2}}>Erscheint ab 04. September 2026</div>
-                  </div>
+            <div style={{background:"linear-gradient(135deg,rgba(212,146,10,.18),rgba(212,146,10,.05))",border:"1px solid "+G,borderRadius:14,padding:"12px 14px"}}>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+                  <div><div style={{fontWeight:800,fontSize:13,color:G}}>💰 Endabrechnung 2026</div><div style={{fontSize:10,color:C.tm,marginTop:1}}>Kosten teilen via Tricount</div></div>
+                  <a href="https://tricount.com/tOWIhxKYqapuYQVFqh" target="_blank" rel="noreferrer" style={{padding:"5px 12px",borderRadius:20,background:"rgba(212,146,10,.2)",border:"1px solid "+G,color:G,fontSize:11,fontWeight:700,textDecoration:"none"}}>Tricount →</a>
                 </div>
-              );
-              return (
-                <div style={{background:"linear-gradient(135deg,rgba(212,146,10,.18),rgba(212,146,10,.05))",border:"1px solid "+G,borderRadius:14,padding:"12px 14px"}}>
-                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-                    <div><div style={{fontWeight:800,fontSize:13,color:G}}>💰 Endabrechnung 2026</div><div style={{fontSize:10,color:C.tm,marginTop:1}}>Kosten teilen via Tricount</div></div>
-                    <a href="https://tricount.com/tOWIhxKYqapuYQVFqh" target="_blank" rel="noreferrer" style={{width:30,height:30,borderRadius:"50%",background:"rgba(212,146,10,.2)",border:"1px solid "+G,display:"flex",alignItems:"center",justifyContent:"center",color:G,fontSize:13,textDecoration:"none"}}>→</a>
+                <div style={{borderTop:"1px solid rgba(212,146,10,.25)",paddingTop:8}}>
+                  <div style={{fontSize:9,color:C.tm,textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:6}}>Wer hat eingetragen & abgerechnet?</div>
+                  <div style={{display:"flex",flexWrap:"wrap",gap:3}}>
+                    {DADS.map(dad => {
+                      const done = tricountDone[dad];
+                      return (
+                        <div key={dad} onClick={()=>syncTricountDone({...tricountDone,[dad]:!tricountDone[dad]})} style={{display:"flex",alignItems:"center",gap:3,padding:"2px 7px",borderRadius:20,background:done?"rgba(16,185,129,.18)":"transparent",cursor:"pointer"}}>
+                          <span style={{fontSize:9,color:done?"#10B981":"rgba(255,255,255,.2)"}}>{done?"✓":"○"}</span>
+                          <span style={{fontSize:10,fontWeight:done?700:400,color:done?"#10B981":C.tf}}>{dad}</span>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div style={{borderTop:"1px solid rgba(212,146,10,.25)",paddingTop:8}}>
-                    <div style={{fontSize:9,color:C.tm,textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:6}}>Wer hat eingetragen & abgerechnet?</div>
-                    <div style={{display:"flex",flexWrap:"wrap",gap:3}}>
-                      {DADS.map(dad => {
-                        const done = tricountDone[dad];
-                        return (
-                          <div key={dad} onClick={()=>syncTricountDone({...tricountDone,[dad]:!tricountDone[dad]})} style={{display:"flex",alignItems:"center",gap:3,padding:"2px 7px",borderRadius:20,background:done?"rgba(16,185,129,.18)":"transparent",cursor:"pointer"}}>
-                            <span style={{fontSize:9,color:done?"#10B981":"rgba(255,255,255,.2)"}}>{done?"✓":"○"}</span>
-                            <span style={{fontSize:10,fontWeight:done?700:400,color:done?"#10B981":C.tf}}>{dad}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                    {Object.values(tricountDone).filter(Boolean).length===DADS.length&&<div style={{marginTop:6,fontSize:11,color:"#10B981",fontWeight:700,textAlign:"center"}}>✅ Alle haben abgerechnet!</div>}
-                  </div>
+                  {Object.values(tricountDone).filter(Boolean).length===DADS.length&&<div style={{marginTop:6,fontSize:11,color:"#10B981",fontWeight:700,textAlign:"center"}}>✅ Alle haben abgerechnet!</div>}
                 </div>
-              );
-            })()}
+              </div>
           </div>
         )}
 
@@ -1043,6 +1029,11 @@ export default function App(){
                     </div>
                   );
                 })}
+              </div>
+              <div style={{marginTop:10,display:"flex",justifyContent:"center"}}>
+                <button onClick={()=>{if(window.confirm("Alle Trophäen-Vergaben zurücksetzen?")){syncTVotes({});syncMyTV({});}}} style={{padding:"7px 18px",borderRadius:20,border:"1px solid rgba(239,68,68,.4)",background:"rgba(239,68,68,.08)",color:"rgba(239,68,68,.8)",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>
+                  🔄 Vergabe zurücksetzen
+                </button>
               </div>
             )}
 
