@@ -1121,10 +1121,7 @@ export default function App(){
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
                 {STATS0.map(s => {
                   const wx = s.wx;
-                  const emoji = wx.includes("Sonnig")||wx.includes("heiß") ? "☀️"
-                              : wx.includes("verregnet")||wx.includes("Regen") ? "🌧️"
-                              : wx.includes("Hitzesommer") ? "🔥"
-                              : wx.includes("Wechsel") ? "⛅" : "🌥️";
+                  const emoji = wx.includes("Sonnig")||wx.includes("heiß")?"☀️":wx.includes("verregnet")||wx.includes("Regen")?"🌧️":wx.includes("Hitzesommer")?"🔥":wx.includes("Wechsel")?"⛅":"🌥️";
                   const tot = Object.keys(s.who).length + (s.ex||[]).length;
                   return (
                     <div key={s.yr} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:12,padding:"10px 12px",display:"flex",alignItems:"center",gap:10}}>
