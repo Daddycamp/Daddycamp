@@ -822,51 +822,6 @@ export default function App(){
                 </div>
               </div>
             )}
-              <div>
-                <div style={sT}>📅 Ablaufplan</div>
-                {sched.map(day => (
-                  <div key={day.day} style={{marginBottom:22}}>
-                    <div style={{fontSize:12,fontWeight:800,textTransform:"uppercase",letterSpacing:2,color:G,marginBottom:10,paddingBottom:7,borderBottom:"1px solid rgba(212,146,10,.28)"}}>{day.e} {day.day}</div>
-                    <div style={{position:"relative",paddingLeft:20}}>
-                      <div style={{position:"absolute",left:6,top:3,bottom:3,width:2,background:C.bl,borderRadius:2}}/>
-                      {day.slots.map((s,i) => (
-                        <div key={i} style={{display:"flex",gap:12,marginBottom:10,position:"relative"}}>
-                          <div style={{position:"absolute",left:-17,top:7,width:9,height:9,borderRadius:"50%",background:G,border:"2px solid "+C.bg}}/>
-                          {editSlot===s.id ? (
-                            <div style={{display:"flex",gap:6,flex:1,alignItems:"center"}}>
-                              <input value={editVal.t} onChange={e=>setEditVal(p=>({...p,t:e.target.value}))} style={{width:52,background:"rgba(255,255,255,.12)",border:"1px solid "+G,borderRadius:7,padding:"6px 7px",color:C.tx,fontSize:11,fontFamily:"Nunito,sans-serif",outline:"none"}}/>
-                              <input value={editVal.l} onChange={e=>setEditVal(p=>({...p,l:e.target.value}))} style={{flex:1,background:"rgba(255,255,255,.12)",border:"1px solid "+G,borderRadius:7,padding:"6px 9px",color:C.tx,fontSize:11,fontFamily:"Nunito,sans-serif",outline:"none"}} onKeyDown={e=>{if(e.key==="Enter"){syncSched(sched.map(d=>({...d,slots:d.slots.map(sl=>sl.id===s.id?{...sl,t:editVal.t,l:editVal.l}:sl)})));setEditSlot(null);}}}/>
-                              <button onClick={()=>{syncSched(sched.map(d=>({...d,slots:d.slots.map(sl=>sl.id===s.id?{...sl,t:editVal.t,l:editVal.l}:sl)})));setEditSlot(null);}} style={{width:28,height:28,borderRadius:7,border:"none",background:C.tl,color:"#fff",cursor:"pointer",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,flexShrink:0}}>✓</button>
-                              <button onClick={()=>setEditSlot(null)} style={{width:28,height:28,borderRadius:7,border:"1px solid "+C.bo,background:"transparent",color:C.tm,cursor:"pointer",fontFamily:"Nunito,sans-serif",fontSize:12,flexShrink:0}}>✕</button>
-                            </div>
-                          ) : (
-                            <div style={{display:"flex",gap:10,flex:1,alignItems:"center"}}>
-                              <div style={{minWidth:40,fontSize:11,color:G,fontWeight:700}}>{s.t}</div>
-                              <div onClick={()=>{setEditSlot(s.id);setEditVal({t:s.t,l:s.l});}} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:10,padding:"8px 12px",flex:1,display:"flex",alignItems:"center",gap:9,cursor:"pointer"}}>
-                                <span style={{fontSize:16}}>{s.i}</span><span style={{fontSize:13,flex:1}}>{s.l}</span><span style={{fontSize:9,color:C.tf}}>✏️</span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-                <div style={sT}>🗺️ Ausflugsziele</div>
-                {!myVote && <div style={{fontSize:12,color:C.tf,fontStyle:"italic",marginBottom:12}}>Zuerst einen Ort im Tab Ort wählen</div>}
-                {myVote && (AUSFLUGS[myVote]||[]).map((a,i) => {
-                  const isO = expAusfl===i;
-                  return (
-                    <div key={i} style={{marginBottom:8}}>
-                      <div onClick={()=>setExpAusfl(isO?null:i)} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:isO?"14px 14px 0 0":14,padding:"11px 13px",cursor:"pointer"}}>
-                        <div style={{display:"flex",alignItems:"center",gap:10}}><span style={{fontSize:22}}>{a.e}</span><div style={{flex:1}}><div style={{fontWeight:800,fontSize:12}}>{a.n}</div><div style={{fontSize:10,color:C.tm}}>{a.t} · {a.d}</div></div><span style={{fontSize:9,color:C.tf}}>{isO?"▲":"▼"}</span></div>
-                      </div>
-                      {isO && <div style={{background:C.bgL,border:"1px solid "+C.bo,borderTop:"none",borderRadius:"0 0 14px 14px",padding:"10px 13px"}}><a href={a.url} target="_blank" rel="noreferrer" style={{fontSize:10,color:G,fontWeight:700,textDecoration:"none",background:"rgba(212,146,10,.12)",border:"1px solid "+G,borderRadius:7,padding:"5px 12px"}}>In Maps öffnen →</a></div>}
-                    </div>
-                  );
-                })}
-                
-              </div>
 
             {/* PLAN SUB-TAB */}
             {ausflugTab==="plan" && (
@@ -1091,6 +1046,16 @@ export default function App(){
                     </div>
                   );
                 })}
+              </div>
+              <div style={{marginTop:12,display:"flex",justifyContent:"center"}}>
+                <button onClick={()=>{
+                  if(window.confirm("Alle Trophäen-Vergaben zurücksetzen?")){
+                    syncTVotes({});
+                    syncMyTV({});
+                  }
+                }} style={{padding:"7px 18px",borderRadius:20,border:"1px solid rgba(239,68,68,.4)",background:"rgba(239,68,68,.08)",color:"rgba(239,68,68,.8)",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>
+                  🔄 Vergabe zurücksetzen
+                </button>
               </div>
             )}
 
