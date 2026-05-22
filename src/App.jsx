@@ -1059,6 +1059,7 @@ export default function App(){
  style={{width:"100%",padding:"8px",borderRadius:9,background:C.gd,border:"none",color:"#fff",fontWeight:800,cursor:"pointer",fontSize:12,fontFamily:"Nunito,sans-serif"}}>Abstimmung erstellen</button>
                 </div>
               </div>
+            </div>
             )}
 
             {funTab==="teilnahme" && (
@@ -1071,7 +1072,9 @@ export default function App(){
                   return (
                     <div key={s.yr} style={{marginBottom:8}}>
                       <div onClick={()=>setExpStatYr(isE?null:s.yr)} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:isE?"14px 14px 0 0":14,padding:"11px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:10}}>
-                        <div style={{width:44,height:44,borderRadius:9,background:"rgba(255,255,255,.07)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><div style={{fontFamily:"Oswald,sans-serif",fontWeight:700,fontSize:15,color:C.tm}}>{s.yr}</div></div>
+                        <div style={{width:42,height:42,borderRadius:9,background:"rgba(255,255,255,.07)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                          <div style={{fontFamily:"Oswald,sans-serif",fontWeight:700,fontSize:14,color:C.tm}}>{s.yr}</div>
+                        </div>
                         <div style={{flex:1}}>
                           <div style={{fontSize:11,fontWeight:700,marginBottom:2}}>{s.wx}</div>
                           {s.loc && <div style={{fontSize:9,color:C.tf,marginBottom:3}}>📍 {s.loc}</div>}
@@ -1080,22 +1083,18 @@ export default function App(){
                             {(yd.ex||[]).map((x,i)=><span key={i} style={{fontSize:8,background:"rgba(16,185,129,.2)",border:"1px solid rgba(16,185,129,.4)",borderRadius:20,padding:"1px 5px",color:C.tl,fontWeight:700}}>{x}</span>)}
                           </div>
                         </div>
-                        <div style={{textAlign:"right",flexShrink:0}}><div style={{fontSize:18,fontWeight:800,color:tot>0?G:C.tf,fontFamily:"Oswald,sans-serif"}}>{tot}</div><div style={{fontSize:8,color:C.tf}}>Familien</div></div>
+                        <div style={{textAlign:"right",flexShrink:0}}>
+                          <div style={{fontFamily:"Oswald,sans-serif",fontSize:18,fontWeight:800,color:tot>0?G:C.tf}}>{tot}</div>
+                          <div style={{fontSize:8,color:C.tf}}>Familien</div>
+                        </div>
                       </div>
                       {isE && (
-                        <div style={{background:C.bgL,border:"1px solid "+C.bo,borderTop:"none",borderRadius:"0 0 14px 14px",padding:"10px 13px"}}>
-                          <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:10}}>
-                            {DADS.filter(d=>yd.who[d]).map(d=><span key={d} style={{fontSize:11,background:"rgba(16,185,129,.15)",border:"1px solid rgba(16,185,129,.4)",borderRadius:20,padding:"4px 10px",color:C.tl,fontWeight:600}}>{d}</span>)}
+                        <div style={{background:C.bgL,border:"1px solid "+C.bo,borderTop:"none",borderRadius:"0 0 14px 14px",padding:"10px 13px",marginBottom:8}}>
+                          <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:7}}>
+                            {DADS.filter(d=>yd.who[d]).map(d=><span key={d} style={{fontSize:11,background:"rgba(16,185,129,.15)",border:"1px solid rgba(16,185,129,.4)",borderRadius:20,padding:"3px 9px",color:C.tl,fontWeight:600}}>{d}</span>)}
                             {(yd.ex||[]).map((x,i)=>(
-                              <div key={i} style={{display:"flex",alignItems:"center",gap:4,background:"rgba(16,185,129,.12)",border:"1px solid rgba(16,185,129,.4)",borderRadius:20,padding:"4px 10px",fontSize:11,color:C.tl,fontWeight:600}}>
-                                {x}<span onClick={()=>{const attCopy={...att};attCopy[s.yr]={...(att[s.yr]||{who:{},ex:[]})};attCopy[s.yr].ex=(att[s.yr]?.ex||[]).filter((_,j)=>j!==i);syncAtt(attCopy);}} style={{cursor:"pointer",opacity:.7,marginLeft:3,fontSize:10}}>✕</span>
-                              </div>
+                              <span key={i} style={{fontSize:11,background:"rgba(16,185,129,.12)",border:"1px solid rgba(16,185,129,.4)",borderRadius:20,padding:"3px 9px",color:C.tl,fontWeight:600}}>{x}</span>
                             ))}
-                          </div>
-                          {s.note && <div style={{fontSize:10,color:C.tm,fontStyle:"italic",marginBottom:8,padding:"6px 10px",background:"rgba(255,255,255,.05)",borderRadius:7}}>{s.note}</div>}
-                          <div style={{display:"flex",gap:7}}>
-                            <input id={"ax"+s.yr} placeholder="Weitere Familie..." style={{flex:1,background:"rgba(255,255,255,.08)",border:"1px solid "+C.bo,borderRadius:7,padding:"6px 10px",color:C.tx,fontSize:11,fontFamily:"Nunito,sans-serif",outline:"none"}} onKeyDown={e=>{if(e.key==="Enter"&&e.target.value.trim()){const attKD={...att,[s.yr]:{...(att[s.yr]||{who:{},ex:[]}),...att[s.yr],ex:[...(att[s.yr]?.ex||[]),e.target.value.trim()]}};syncAtt(attKD);e.target.value="";}}}/>
-                            <button onClick={()=>{const inp=document.getElementById("ax"+s.yr);if(inp&&inp.value.trim()){const attBtn={...att,[s.yr]:{...(att[s.yr]||{who:{},ex:[]}),...att[s.yr],ex:[...(att[s.yr]?.ex||[]),inp.value.trim()]}};syncAtt(attBtn);inp.value="";}}} style={{padding:"6px 12px",borderRadius:7,background:C.gd,border:"none",color:"#fff",fontWeight:800,cursor:"pointer",fontSize:11,fontFamily:"Nunito,sans-serif"}}>+</button>
                           </div>
                         </div>
                       )}
@@ -1103,38 +1102,45 @@ export default function App(){
                   );
                 })}
                 <div style={{...sC,marginTop:6}}>
-                  <div style={{fontWeight:800,fontSize:13,marginBottom:10}}>Teilnahmen 2019-2025</div>
+                  <div style={sT}>📊 Teilnahmen</div>
                   {DADS.map(d => {
                     const cnt = STATS0.filter(s=>(att[s.yr]||{}).who?.[d]).length;
                     const pct = Math.round(cnt/STATS0.length*100);
+                    const color = cnt>=6?G:cnt>=4?"#10B981":cnt>=2?"#60A5FA":"rgba(255,255,255,.25)";
                     return (
                       <div key={d} style={{display:"flex",alignItems:"center",gap:9,padding:"6px 0",borderBottom:"1px solid "+C.bl}}>
                         <div style={{minWidth:65,fontSize:12,fontWeight:600}}>{d}</div>
-                        <div style={{flex:1,height:5,background:"rgba(255,255,255,.1)",borderRadius:3,overflow:"hidden"}}><div style={{height:"100%",width:pct+"%",background:cnt>=5?G:cnt>=3?C.tl:"rgba(255,255,255,.2)",borderRadius:3,transition:"width .5s"}}/></div>
-                        <div style={{minWidth:55,textAlign:"right"}}><span style={{fontSize:12,fontWeight:800,color:cnt>=5?G:cnt>=3?C.tl:C.tf}}>{cnt}x</span><span style={{fontSize:9,color:C.tf}}> ({pct}%)</span></div>
+                        <div style={{flex:1,height:6,background:"rgba(255,255,255,.1)",borderRadius:3,overflow:"hidden"}}>
+                          <div style={{height:"100%",width:pct+"%",background:color,borderRadius:3,transition:"width .5s"}}/>
+                        </div>
+                        <div style={{minWidth:40,textAlign:"right"}}>
+                          <span style={{fontSize:12,fontWeight:800,color:color}}>{cnt}x</span>
+                          <span style={{fontSize:9,color:C.tf}}> ({pct}%)</span>
+                        </div>
                       </div>
                     );
                   })}
                 </div>
-
-              <div style={sT}>🌦️ Wetterkarte</div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
-                {STATS0.map(s => {
-                  const wx = s.wx;
-                  const emoji = wx.includes("Sonnig")||wx.includes("heiß")?"☀️":wx.includes("verregnet")||wx.includes("Regen")?"🌧️":wx.includes("Hitzesommer")?"🔥":wx.includes("Wechsel")?"⛅":"🌥️";
-                  const tot = Object.keys(s.who).length + (s.ex||[]).length;
-                  return (
-                    <div key={s.yr} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:12,padding:"10px 12px",display:"flex",alignItems:"center",gap:10}}>
-                      <div style={{fontSize:26,lineHeight:1}}>{emoji}</div>
-                      <div>
-                        <div style={{fontFamily:"Oswald,sans-serif",fontWeight:700,fontSize:15,color:G,lineHeight:1}}>{s.yr}</div>
-                        <div style={{fontSize:10,color:C.tm,marginTop:2}}>{wx}</div>
-                        <div style={{fontSize:9,color:C.tf,marginTop:1}}>{tot} Familien</div>
+                <div style={sT}>🌦️ Wetterkarte</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
+                  {STATS0.map(s => {
+                    const wx = s.wx;
+                    const emoji = wx.includes("Sonnig")||wx.includes("heiß")?"☀️":wx.includes("verregnet")||wx.includes("Regen")?"🌧️":wx.includes("Hitzesommer")?"🔥":wx.includes("Wechsel")?"⛅":"🌥️";
+                    const tot = Object.keys(s.who).length+(s.ex||[]).length;
+                    return (
+                      <div key={s.yr} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:12,padding:"10px 12px",display:"flex",alignItems:"center",gap:10}}>
+                        <div style={{fontSize:26,lineHeight:1}}>{emoji}</div>
+                        <div>
+                          <div style={{fontFamily:"Oswald,sans-serif",fontWeight:700,fontSize:15,color:G,lineHeight:1}}>{s.yr}</div>
+                          <div style={{fontSize:10,color:C.tm,marginTop:2}}>{wx}</div>
+                          <div style={{fontSize:9,color:C.tf,marginTop:1}}>{tot} Familien</div>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
+            </div>
             )}
 
             {funTab==="lied" && (
