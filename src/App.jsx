@@ -62,18 +62,18 @@ const DESTS = [
    detail:"Idyllischer Naturcamp im Westerwald am Teich. Esel-Trekking, Broetchenservice. Heimat des Daddycamps 2020-2024!",
    hl:["Esel-Trekking","Brötchenservice","Naturstellplätze","Teich"],
    prices:[{l:"Stellplatz",p:"13 EUR",b:true},{l:"Erw. ab 12",p:"8 EUR",b:false},{l:"Kinder",p:"4 EUR",b:false},{l:"Strom/kWh",p:"0,75 EUR",b:false}],
-   votes:11,ab:false},
+   votes:0,ab:false},
   {id:3,name:"Eifel - Freilinger See",emoji:"🏕",flag:"🇩🇪",desc:"Direkter Seezugang, Angeln",
    addr:"Am Freilinger See 1, 53945 Blankenheim",nav:"https://maps.google.com/?q=Freilinger+See+Blankenheim",
    hp:"https://eifel-camp.freizeit-oasen.de/",dist:"~1 Std.",
-   detail:"Direkt am Natursee. Angeln, SUP, Restaurant. 2026 ausgebucht – für 2027 abstimmbar!",
+   detail:"Direkt am Natursee. Angeln, SUP, Restaurant. Für 2027 abstimmbar!",
    hl:["Badesee","Angeln","SUP","Restaurant"],
    prices:[{l:"Komfortstellplatz",p:"20-24 EUR",b:true},{l:"Erw./Nacht",p:"8 EUR",b:false},{l:"Kind/Nacht",p:"7,50 EUR",b:false}],
    votes:0,ab:false,ab2026:true},
   {id:4,name:"Haider Bergsee Brühl",emoji:"⛰",flag:"🇩🇪",desc:"Bergsee, Natur pur",
    addr:"Haider Bergseeweg, 50321 Brühl",nav:"https://maps.google.com/?q=Haider+Bergsee+Brühl",
    hp:null,dist:"~30 Min.",
-   detail:"Bergsee in Brühl. Ruhige Waldlage, Baden, Angeln. Für 2026 ausgebucht.",
+   detail:"Bergsee in Brühl. Ruhige Waldlage, Baden, Angeln.",
    hl:["Bergsee","Angeln","Waldlage","30 Min."],
    prices:[],votes:0,ab:false,ab2026:true},
 ];
@@ -669,10 +669,9 @@ export default function App(){
                 </div>
                 {dests.map(d => {
                   const maxV=Math.max(...dests.map(x=>x.votes),1), pct=Math.round(d.votes/maxV*100), isV=myVote===d.id, isE=expDest===d.id;
-                  const wasAb2026 = d.ab2026===true;
                   return (
                     <div key={d.id} style={{marginBottom:9}}>
-                      <div onClick={()=>setExpDest(isE?null:d.id)} style={{background:wasAb2026?"rgba(245,158,11,.06)":isV?"rgba(212,146,10,.14)":C.bc,border:"1px solid "+(wasAb2026?"rgba(245,158,11,.3)":isV?G:C.bo),borderRadius:isE?"14px 14px 0 0":14,padding:"13px 14px",cursor:"pointer",opacity:1}}>
+                      <div onClick={()=>setExpDest(isE?null:d.id)} style={{background:isV?"rgba(212,146,10,.14)":C.bc,border:"1px solid "+(isV?G:C.bo),borderRadius:isE?"14px 14px 0 0":14,padding:"13px 14px",cursor:"pointer",opacity:1}}>
                         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                           <div style={{display:"flex",gap:10,alignItems:"center"}}>
                             <span style={{fontSize:24}}>{d.emoji}</span>
@@ -682,7 +681,7 @@ export default function App(){
                             </div>
                           </div>
                           <div style={{textAlign:"right",minWidth:55,flexShrink:0}}>
-                            {wasAb2026 ? <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2}}><div style={{fontSize:9,background:"rgba(245,158,11,.2)",color:"#F59E0B",padding:"2px 6px",borderRadius:20,fontWeight:700,whiteSpace:"nowrap"}}>2026 ausgebucht</div><div style={{fontSize:10,fontWeight:800,color:G}}>{d.votes>0?d.votes+' ★':'' }</div></div> : <><div style={{fontSize:12,fontWeight:800,color:G}}>{isV?"★":""}{d.votes}</div><div style={{fontSize:9,color:C.tf}}>Stimmen</div></>}
+                            <><div style={{fontSize:12,fontWeight:800,color:G}}>{isV?"★":""}{d.votes}</div><div style={{fontSize:9,color:C.tf}}>Stimmen</div></>
                           </div>
                         </div>
                         <div style={{marginTop:8,background:"rgba(255,255,255,.1)",borderRadius:3,height:4}}><div style={{width:pct+"%",height:"100%",borderRadius:3,background:isV?G:C.tl,transition:"width .5s"}}/></div>
@@ -707,7 +706,7 @@ export default function App(){
                                 ))}
                               </div>
                             )}
-                            {wasAb2026 && <div style={{fontSize:10,color:"#F59E0B",fontWeight:600,marginBottom:6,padding:"5px 10px",background:"rgba(245,158,11,.1)",border:"1px solid rgba(245,158,11,.3)",borderRadius:8}}>ℹ️ War 2026 ausgebucht – für 2027 abstimmbar</div>}
+                            
                             {(
                               <button onClick={()=>{if(myVote===d.id)return;syncDests(dests.map(x=>({...x,votes:x.id===d.id?x.votes+1:x.votes})));syncMyVote(d.id);}} style={{width:"100%",padding:"9px",borderRadius:9,background:isV?G:"rgba(212,146,10,.17)",border:"1px solid "+G,color:isV?"#1E2D3E":G,fontWeight:800,cursor:"pointer",fontSize:13,fontFamily:"Nunito,sans-serif"}}>{isV?"✓ Dein Votum für 2027":"Für 2027 stimmen"}</button>
                             )}
