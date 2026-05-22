@@ -503,34 +503,41 @@ export default function App(){
             </div>
 
             {/* Tricount */}
-            <div style={{background:"linear-gradient(135deg,rgba(212,146,10,.18),rgba(212,146,10,.05))",border:"1px solid "+G,borderRadius:14,padding:"14px 16px",marginBottom:0}}>
-              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
-                <div><div style={{fontWeight:800,fontSize:14,color:G}}>💰 Ausgaben & Abrechnung</div><div style={{fontSize:11,color:C.tm,marginTop:2}}>Kosten teilen via Tricount</div></div>
-                <a href="https://tricount.com/tOWIhxKYqapuYQVFqh" target="_blank" rel="noreferrer" style={{textDecoration:"none"}}>
-                  <div style={{width:34,height:34,borderRadius:"50%",background:"rgba(212,146,10,.2)",border:"1px solid "+G,display:"flex",alignItems:"center",justifyContent:"center",color:G,fontSize:16}}>→</div>
-                </a>
-              </div>
-              <div style={{borderTop:"1px solid rgba(212,146,10,.25)",paddingTop:10}}>
-                <div style={{fontWeight:800,fontSize:13,color:G,marginBottom:6}}>Endabrechnung 2026</div>
-                <div style={{fontSize:10,color:C.tm,textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:8}}>Wer hat eingetragen & abgerechnet?</div>
-                <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-                  {DADS.map(dad => {
-                    const done = tricountDone[dad];
-                    return (
-                      <div key={dad} onClick={()=>syncTricountDone({...tricountDone,[dad]:!tricountDone[dad]})} style={{display:"flex",alignItems:"center",gap:6,padding:"5px 11px",borderRadius:20,border:"1px solid "+(done?"rgba(16,185,129,.45)":"rgba(255,255,255,.15)"),background:done?"rgba(16,185,129,.15)":"rgba(255,255,255,.06)",cursor:"pointer"}}>
-                        <div style={{width:14,height:14,borderRadius:4,border:"2px solid "+(done?"#10B981":"rgba(255,255,255,.3)"),background:done?"#10B981":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                          {done && <span style={{color:"#fff",fontSize:8,fontWeight:900}}>✓</span>}
-                        </div>
-                        <span style={{fontSize:11,fontWeight:done?700:400,color:done?"#10B981":C.tm}}>{dad}</span>
-                      </div>
-                    );
-                  })}
+            {(()=>{
+              const campStarted = new Date() >= TOUR;
+              if (!campStarted) return (
+                <div style={{background:"rgba(212,146,10,.07)",border:"1px solid rgba(212,146,10,.25)",borderRadius:14,padding:"12px 16px",display:"flex",alignItems:"center",gap:12}}>
+                  <div style={{fontSize:24}}>💰</div>
+                  <div>
+                    <div style={{fontWeight:800,fontSize:13,color:G}}>Endabrechnung 2026</div>
+                    <div style={{fontSize:11,color:C.tm,marginTop:2}}>Erscheint ab 04. September 2026</div>
+                  </div>
                 </div>
-                {Object.values(tricountDone).filter(Boolean).length === DADS.length && (
-                  <div style={{marginTop:8,fontSize:11,color:"#10B981",fontWeight:700,textAlign:"center"}}>✅ Alle haben eingetragen und abgerechnet!</div>
-                )}
-              </div>
-            </div>
+              );
+              return (
+                <div style={{background:"linear-gradient(135deg,rgba(212,146,10,.18),rgba(212,146,10,.05))",border:"1px solid "+G,borderRadius:14,padding:"12px 14px"}}>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+                    <div><div style={{fontWeight:800,fontSize:13,color:G}}>💰 Endabrechnung 2026</div><div style={{fontSize:10,color:C.tm,marginTop:1}}>Kosten teilen via Tricount</div></div>
+                    <div style={{width:30,height:30,borderRadius:"50%",background:"rgba(212,146,10,.2)",border:"1px solid "+G,display:"flex",alignItems:"center",justifyContent:"center",color:G,fontSize:13}}>→</div>
+                  </div>
+                  <div style={{borderTop:"1px solid rgba(212,146,10,.25)",paddingTop:8}}>
+                    <div style={{fontSize:9,color:C.tm,textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:6}}>Wer hat eingetragen & abgerechnet?</div>
+                    <div style={{display:"flex",flexWrap:"wrap",gap:3}}>
+                      {DADS.map(dad => {
+                        const done = tricountDone[dad];
+                        return (
+                          <div key={dad} onClick={()=>syncTricountDone({...tricountDone,[dad]:!tricountDone[dad]})} style={{display:"flex",alignItems:"center",gap:3,padding:"2px 7px",borderRadius:20,background:done?"rgba(16,185,129,.18)":"transparent",cursor:"pointer"}}>
+                            <span style={{fontSize:9,color:done?"#10B981":"rgba(255,255,255,.2)"}}>{done?"✓":"○"}</span>
+                            <span style={{fontSize:10,fontWeight:done?700:400,color:done?"#10B981":C.tf}}>{dad}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {Object.values(tricountDone).filter(Boolean).length===DADS.length&&<div style={{marginTop:6,fontSize:11,color:"#10B981",fontWeight:700,textAlign:"center"}}>✅ Alle haben abgerechnet!</div>}
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         )}
 
@@ -649,7 +656,7 @@ export default function App(){
         {tab==="ausflug" && (
           <div>
             <div style={{display:"flex",gap:7,marginBottom:16}}>
-              {[{id:"ort",l:"🗳️ Ort & Abstimmung"},{id:"plan",l:"📅 Plan & Ausflüge"},{id:"termine",l:"📆 Daddycamp Termine"}].map(x => (
+              {[{id:"ort",l:"🗳️ Ort & Abstimmung"},{id:"plan",l:"📅 Plan & Ausflüge"},{id:"termine",l:"📆 Daddycamp Termine"},{id:"wetter",l:"🌤️ Wetter"}].map(x => (
                 <button key={x.id} onClick={()=>setAusflugTab(x.id)} style={{flex:1,padding:"8px 4px",borderRadius:10,border:"1px solid "+(ausflugTab===x.id?G:C.bo),background:ausflugTab===x.id?"rgba(212,146,10,.16)":C.bc,color:ausflugTab===x.id?G:C.tm,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{x.l}</button>
               ))}
             </div>
@@ -925,6 +932,42 @@ export default function App(){
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {tab==="ausflug" && ausflugTab==="wetter" && (
+          <div>
+            <div style={sT}>🌤️ Wetterübersicht – Westerwald</div>
+            <div style={{background:"rgba(59,130,246,.08)",border:"1px solid rgba(59,130,246,.25)",borderRadius:12,padding:"10px 14px",marginBottom:14}}>
+              <div style={{fontSize:11,color:"#60A5FA",marginBottom:4}}>📍 Hofgut Schönerlen, Steinen · 04.–06. September 2026</div>
+              <div style={{fontSize:10,color:C.tm}}>Wettervorschau wird näher am Termin präziser. Basierend auf Klimadaten September Westerwald.</div>
+            </div>
+            {[
+              {day:"Freitag, 04.09.",icon:"⛅",temp:"19°C",low:"13°C",rain:"20%",wind:"12 km/h",desc:"Wechselnd bewölkt"},
+              {day:"Samstag, 05.09.",icon:"🌤️",temp:"21°C",low:"14°C",rain:"10%",wind:"8 km/h",desc:"Überwiegend sonnig"},
+              {day:"Sonntag, 06.09.",icon:"🌥️",temp:"18°C",low:"12°C",rain:"30%",wind:"15 km/h",desc:"Bewölkt, etwas Regen möglich"},
+            ].map((w,i) => (
+              <div key={i} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:14,padding:"14px 16px",marginBottom:10}}>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+                  <div>
+                    <div style={{fontWeight:800,fontSize:13}}>{w.day}</div>
+                    <div style={{fontSize:11,color:C.tm,marginTop:2}}>{w.desc}</div>
+                  </div>
+                  <div style={{fontSize:38,lineHeight:1}}>{w.icon}</div>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:7}}>
+                  {[{l:"Max",v:w.temp,c:G},{l:"Min",v:w.low,c:"#60A5FA"},{l:"Regen",v:w.rain,c:"#60A5FA"},{l:"Wind",v:w.wind,c:C.tm}].map(x=>(
+                    <div key={x.l} style={{background:"rgba(255,255,255,.06)",borderRadius:9,padding:"7px 4px",textAlign:"center"}}>
+                      <div style={{fontSize:12,fontWeight:800,color:x.c}}>{x.v}</div>
+                      <div style={{fontSize:9,color:C.tf,textTransform:"uppercase",letterSpacing:1,marginTop:1}}>{x.l}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+            <div style={{background:"rgba(255,255,255,.05)",border:"1px solid "+C.bl,borderRadius:10,padding:"9px 13px"}}>
+              <div style={{fontSize:10,color:C.tf,lineHeight:1.5}}>💡 Aktuelle Vorhersage kurz vor dem Camp: wetter.de → Steinen, Westerwald</div>
+            </div>
           </div>
         )}
 
