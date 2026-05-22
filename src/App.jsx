@@ -878,20 +878,17 @@ export default function App(){
             <div style={sT}>🌤️ Wetterübersicht – Westerwald</div>
             <div style={{background:"rgba(59,130,246,.08)",border:"1px solid rgba(59,130,246,.25)",borderRadius:12,padding:"10px 14px",marginBottom:14}}>
               <div style={{fontSize:11,color:"#60A5FA",marginBottom:4}}>📍 Hofgut Schönerlen, Steinen · 04.–06. September 2026</div>
-              <div style={{fontSize:10,color:C.tm}}>Wettervorschau wird näher am Termin präziser. Basierend auf Klimadaten September Westerwald.</div>
+              <div style={{fontSize:10,color:C.tm}}>Wettervorschau näher am Termin präziser. Basierend auf Klimadaten September Westerwald.</div>
             </div>
             {[
               {day:"Freitag, 04.09.",icon:"⛅",temp:"19°C",low:"13°C",rain:"20%",wind:"12 km/h",desc:"Wechselnd bewölkt"},
               {day:"Samstag, 05.09.",icon:"🌤️",temp:"21°C",low:"14°C",rain:"10%",wind:"8 km/h",desc:"Überwiegend sonnig"},
-              {day:"Sonntag, 06.09.",icon:"🌥️",temp:"18°C",low:"12°C",rain:"30%",wind:"15 km/h",desc:"Bewölkt, etwas Regen möglich"},
+              {day:"Sonntag, 06.09.",icon:"🌥️",temp:"18°C",low:"12°C",rain:"30%",wind:"15 km/h",desc:"Bewölkt, etwas Regen"},
             ].map((w,i) => (
               <div key={i} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:14,padding:"14px 16px",marginBottom:10}}>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
-                  <div>
-                    <div style={{fontWeight:800,fontSize:13}}>{w.day}</div>
-                    <div style={{fontSize:11,color:C.tm,marginTop:2}}>{w.desc}</div>
-                  </div>
-                  <div style={{fontSize:38,lineHeight:1}}>{w.icon}</div>
+                  <div><div style={{fontWeight:800,fontSize:13}}>{w.day}</div><div style={{fontSize:11,color:C.tm,marginTop:2}}>{w.desc}</div></div>
+                  <div style={{fontSize:36,lineHeight:1}}>{w.icon}</div>
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:7}}>
                   {[{l:"Max",v:w.temp,c:G},{l:"Min",v:w.low,c:"#60A5FA"},{l:"Regen",v:w.rain,c:"#60A5FA"},{l:"Wind",v:w.wind,c:C.tm}].map(x=>(
@@ -904,7 +901,7 @@ export default function App(){
               </div>
             ))}
             <div style={{background:"rgba(255,255,255,.05)",border:"1px solid "+C.bl,borderRadius:10,padding:"9px 13px"}}>
-              <div style={{fontSize:10,color:C.tf,lineHeight:1.5}}>💡 Aktuelle Vorhersage kurz vor dem Camp: wetter.de → Steinen, Westerwald</div>
+              <div style={{fontSize:10,color:C.tf}}>💡 Aktuelle Vorhersage kurz vor dem Camp: wetter.de → Steinen, Westerwald</div>
             </div>
           </div>
         )}
@@ -1046,16 +1043,6 @@ export default function App(){
                     </div>
                   );
                 })}
-              </div>
-              <div style={{marginTop:12,display:"flex",justifyContent:"center"}}>
-                <button onClick={()=>{
-                  if(window.confirm("Alle Trophäen-Vergaben zurücksetzen?")){
-                    syncTVotes({});
-                    syncMyTV({});
-                  }
-                }} style={{padding:"7px 18px",borderRadius:20,border:"1px solid rgba(239,68,68,.4)",background:"rgba(239,68,68,.08)",color:"rgba(239,68,68,.8)",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>
-                  🔄 Vergabe zurücksetzen
-                </button>
               </div>
             )}
 
