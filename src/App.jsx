@@ -518,7 +518,7 @@ export default function App(){
                 <div style={{background:"linear-gradient(135deg,rgba(212,146,10,.18),rgba(212,146,10,.05))",border:"1px solid "+G,borderRadius:14,padding:"12px 14px"}}>
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
                     <div><div style={{fontWeight:800,fontSize:13,color:G}}>💰 Endabrechnung 2026</div><div style={{fontSize:10,color:C.tm,marginTop:1}}>Kosten teilen via Tricount</div></div>
-                    <div style={{width:30,height:30,borderRadius:"50%",background:"rgba(212,146,10,.2)",border:"1px solid "+G,display:"flex",alignItems:"center",justifyContent:"center",color:G,fontSize:13}}>→</div>
+                    <a href="https://tricount.com/tOWIhxKYqapuYQVFqh" target="_blank" rel="noreferrer" style={{width:30,height:30,borderRadius:"50%",background:"rgba(212,146,10,.2)",border:"1px solid "+G,display:"flex",alignItems:"center",justifyContent:"center",color:G,fontSize:13,textDecoration:"none"}}>→</a>
                   </div>
                   <div style={{borderTop:"1px solid rgba(212,146,10,.25)",paddingTop:8}}>
                     <div style={{fontSize:9,color:C.tm,textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:6}}>Wer hat eingetragen & abgerechnet?</div>
@@ -865,15 +865,7 @@ export default function App(){
                     </div>
                   );
                 })}
-                <div style={{...sT,marginTop:8}}>🌿 Stockbrot am Lagerfeuer</div>
-                <div style={sC}>
-                  {[{i:"🌾",l:"Zutaten",xs:["500g Mehl","1 Päckchen Hefe","1 TL Salz","1 TL Zucker","300ml Wasser","3 EL Olivenöl"]},{i:"👨‍🍳",l:"Zubereitung",xs:["Mehl, Hefe, Salz & Zucker mischen","Wasser & Öl dazugeben, 5 Min. kneten","30 Min. ruhen lassen","Spiralförmig um Stöcke wickeln","Über Glut 10-15 Min. backen"]},{i:"💡",l:"Tipps",xs:["Stöcke schälen & wässern","Über Glut – nicht Flamme!","Fertig wenn hohl klingt"]}].map(sec => (
-                    <div key={sec.l} style={{marginBottom:12}}>
-                      <div style={{fontSize:11,fontWeight:800,color:G,marginBottom:5}}>{sec.i} {sec.l}</div>
-                      {sec.xs.map((x,i) => <div key={i} style={{fontSize:12,color:C.tm,padding:"2px 0",borderBottom:"1px solid "+C.bl,display:"flex",gap:7}}><span style={{color:C.tf,minWidth:14}}>{i+1}.</span><span>{x}</span></div>)}
-                    </div>
-                  ))}
-                </div>
+                
               </div>
 
             {/* PLAN SUB-TAB */}
@@ -921,15 +913,6 @@ export default function App(){
                     </div>
                   );
                 })}
-                <div style={{...sT,marginTop:8}}>🌿 Stockbrot am Lagerfeuer</div>
-                <div style={sC}>
-                  {[{i:"🌾",l:"Zutaten",xs:["500g Mehl","1 Päckchen Hefe","1 TL Salz","1 TL Zucker","300ml Wasser","3 EL Olivenöl"]},{i:"👨‍🍳",l:"Zubereitung",xs:["Mehl, Hefe, Salz & Zucker mischen","Wasser & Öl dazugeben, 5 Min. kneten","30 Min. ruhen lassen","Spiralförmig um Stöcke wickeln","Über Glut 10-15 Min. backen"]},{i:"💡",l:"Tipps",xs:["Stöcke schälen & wässern","Über Glut – nicht Flamme!","Fertig wenn hohl klingt"]}].map(sec => (
-                    <div key={sec.l} style={{marginBottom:12}}>
-                      <div style={{fontSize:11,fontWeight:800,color:G,marginBottom:5}}>{sec.i} {sec.l}</div>
-                      {sec.xs.map((x,i) => <div key={i} style={{fontSize:12,color:C.tm,padding:"2px 0",borderBottom:"1px solid "+C.bl,display:"flex",gap:7}}><span style={{color:C.tf,minWidth:14}}>{i+1}.</span><span>{x}</span></div>)}
-                    </div>
-                  ))}
-                </div>
               </div>
             )}
           </div>
