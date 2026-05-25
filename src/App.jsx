@@ -215,6 +215,15 @@ export default function App(){
   const [newCtrName,setNewCtrName] = useState("");
   const [lieder,setLieder] = useState(LIEDER0);
   const [newLiedYr,setNewLiedYr] = useState("");
+  const [showAddFam,setShowAddFam] = useState(false);
+  const [newFamFirst,setNewFamFirst] = useState("");
+  const [newFamLast,setNewFamLast]  = useState("");
+  const [newKids,setNewKids]        = useState("");
+  const [fotoVotes,setFotoVotes]    = useState({});
+  const [myFotoVote,setMyFotoVote]  = useState(null);
+  const [newFotoUrl,setNewFotoUrl]  = useState("");
+  const [newFotoCaption,setNewFotoCaption] = useState("");
+  const [newFotoWho,setNewFotoWho]  = useState("Stefan");
   const [tricountDone,setTricountDone] = useState({});
   const [sched,setSched] = useState(SCHED0);
   const [editSlot,setEditSlot] = useState(null);
@@ -254,9 +263,12 @@ export default function App(){
     listen("lieder",setLieder);listen("tricountDone",setTricountDone);
     listen("att",setAtt);listen("pkChk",setPkChk);listen("packExtra",setPackExtra);
     listen("sched",setSched);
+    listen("fotoVotes",setFotoVotes);
+    listen("myFotoVote",setMyFotoVote);
     return () => unsubs.forEach(u => u());
   }, []);
   // ── Helpers ──────────────────────────────────────────────
+  const allDads = fams.map(f => f.first);
   const aKey = item => item.replace(/[^a-zA-Z0-9]/g,"_");
   const getA  = item => asgn[aKey(item)] || [];
   const togA  = (item,dad) => {
@@ -303,6 +315,8 @@ export default function App(){
   const syncPkChk        = v => { setPkChk(v);        fbSet("pkChk", v); };
   const syncPackExtra    = v => { setPackExtra(v);    fbSet("packExtra", v); };
   const syncSched        = v => { setSched(v);        fbSet("sched", v); };
+  const syncFotoVotes   = v => { setFotoVotes(v);   fbSet("fotoVotes", v); };
+  const syncMyFotoVote  = v => { setMyFotoVote(v);  fbSet("myFotoVote", v); };
 
   function addLied() {
     const s=newLiedSong.trim(), a=newLiedArtist.trim(), y=newLiedYr.trim();
@@ -570,6 +584,33 @@ export default function App(){
                 </div>
               );
             })}
+            <div style={{background:"rgba(59,130,246,.08)",border:"1px solid rgba(59,130,246,.3)",borderRadius:14,padding:13,marginTop:10}}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:showAddFam?10:0}}>
+                <div style={{fontWeight:800,fontSize:13,color:"#60A5FA"}}>👨‍👧 Familie hinzufügen</div>
+                <button onClick={()=>setShowAddFam(!showAddFam)} style={{padding:"4px 12px",borderRadius:20,border:"1px solid rgba(59,130,246,.4)",background:"transparent",color:"#60A5FA",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{showAddFam?"↑ Schließen":"+ Hinzufügen"}</button>
+              </div>
+              {showAddFam && (
+                <div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:7,marginBottom:7}}>
+                    <input value={newFamFirst} onChange={e=>setNewFamFirst(e.target.value)} placeholder="Vorname Vater" style={{background:"rgba(255,255,255,.09)",border:"1px solid "+C.bo,borderRadius:9,padding:"8px 10px",color:C.tx,fontSize:12,fontFamily:"Nunito,sans-serif",outline:"none"}}/>
+                    <input value={newFamLast} onChange={e=>setNewFamLast(e.target.value)} placeholder="Nachname" style={{background:"rgba(255,255,255,.09)",border:"1px solid "+C.bo,borderRadius:9,padding:"8px 10px",color:C.tx,fontSize:12,fontFamily:"Nunito,sans-serif",outline:"none"}}/>
+                  </div>
+                  <input value={newKids} onChange={e=>setNewKids(e.target.value)} placeholder="Kinder: Name👧, Name👦 (Komma getrennt)" style={{width:"100%",background:"rgba(255,255,255,.09)",border:"1px solid "+C.bo,borderRadius:9,padding:"8px 10px",color:C.tx,fontSize:12,fontFamily:"Nunito,sans-serif",outline:"none",boxSizing:"border-box",marginBottom:7}}/>
+                  <button onClick={()=>{
+                    const first=newFamFirst.trim(),last=newFamLast.trim();
+                    if(!first||!last)return;
+                    const kids=newKids.split(",").map(k=>k.trim()).filter(Boolean).map(k=>{
+                      const isGirl=k.includes("👧");
+                      const name=k.replace(/[👦👧]/gu,"").trim();
+                      return{first:name||k,g:isGirl?"👧":"👦",st:"yes"};
+                    });
+                    syncFams([...fams,{id:Date.now(),first,last,dSt:"yes",reg:false,paid:false,kids}]);
+                    setNewFamFirst("");setNewFamLast("");setNewKids("");setShowAddFam(false);
+                  }} style={{width:"100%",padding:"8px",borderRadius:9,background:"rgba(59,130,246,.2)",border:"1px solid rgba(59,130,246,.4)",color:"#60A5FA",fontWeight:800,cursor:"pointer",fontSize:13,fontFamily:"Nunito,sans-serif"}}>Familie hinzufügen</button>
+                </div>
+              )}
+            </div>
+
             <div style={{background:"rgba(212,146,10,.09)",border:"1px solid rgba(212,146,10,.28)",borderRadius:14,padding:13,marginTop:4}}>
               <div style={{textAlign:"center",color:G,fontWeight:800,fontSize:12,marginBottom:10}}>{tD} Väter · {tK} Kinder</div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:7}}>
@@ -982,7 +1023,7 @@ export default function App(){
         {tab==="fun" && (
           <div>
             <div style={{display:"flex",gap:5,marginBottom:16,flexWrap:"wrap"}}>
-              {[{id:"trophies",l:"🏆 Trophäen"},{id:"polls",l:"📢 Abstimmungen"},{id:"teilnahme",l:"📊 Teilnahme"},{id:"lied",l:"🎵 Lied"},{id:"ctr",l:"🍺 Verbrauch"}].map(x => (
+              {[{id:"trophies",l:"🏆 Trophäen"},{id:"polls",l:"📢 Abstimmungen"},{id:"teilnahme",l:"📊 Teilnahme"},{id:"foto",l:"📸 Foto-Vote"},{id:"lied",l:"🎵 Lied"},{id:"ctr",l:"🍺 Verbrauch"}].map(x => (
                 <button key={x.id} onClick={()=>setFunTab(x.id)} style={{padding:"6px 11px",borderRadius:9,border:"1px solid "+(funTab===x.id?G:C.bo),background:funTab===x.id?"rgba(212,146,10,.16)":C.bc,color:funTab===x.id?G:C.tm,fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{x.l}</button>
               ))}
             </div>
@@ -1193,6 +1234,49 @@ export default function App(){
         )}
 
         </div>
+
+        {tab==="fun" && funTab==="foto" && (
+          <div>
+            <div style={sT}>📸 Foto-Abstimmung</div>
+            <p style={{fontSize:12,color:C.tm,marginBottom:14}}>Nach dem Camp: Jeder lädt sein Lieblingsfoto hoch, alle stimmen ab.</p>
+            {Object.keys(fotoVotes).length===0 && (
+              <div style={{textAlign:"center",padding:"28px 16px",background:C.bc,border:"1px solid "+C.bo,borderRadius:14,marginBottom:14}}>
+                <div style={{fontSize:40,marginBottom:8}}>📷</div>
+                <div style={{fontWeight:700,fontSize:14,marginBottom:4}}>Noch keine Fotos</div>
+                <div style={{fontSize:12,color:C.tm}}>Nach dem Camp können alle ihr Lieblingsfoto hochladen.</div>
+              </div>
+            )}
+            {Object.entries(fotoVotes).sort((a,b)=>b[1].votes-a[1].votes).map(([id,foto])=>{
+              const isMyVote=myFotoVote===id;
+              const hasVoted=myFotoVote!==null;
+              return (
+                <div key={id} style={{background:isMyVote?"rgba(212,146,10,.14)":C.bc,border:"1px solid "+(isMyVote?G:C.bo),borderRadius:14,overflow:"hidden",marginBottom:12}}>
+                  {foto.url && <img src={foto.url} alt="" style={{width:"100%",maxHeight:220,objectFit:"cover",display:"block"}} onError={e=>e.target.style.display="none"}/>}
+                  <div style={{padding:"10px 13px"}}>
+                    {foto.caption && <div style={{fontSize:12,fontStyle:"italic",color:C.tm,marginBottom:7}}>"{foto.caption}"</div>}
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                      <div style={{fontSize:11,color:C.tf}}>von {foto.submittedBy} · {foto.votes||0} Stimme{(foto.votes||0)!==1?"n":""}</div>
+                      <button onClick={()=>{if(hasVoted)return;syncFotoVotes({...fotoVotes,[id]:{...foto,votes:(foto.votes||0)+1}});syncMyFotoVote(id);}} style={{padding:"5px 14px",borderRadius:20,background:isMyVote?G:"rgba(212,146,10,.17)",border:"1px solid "+G,color:isMyVote?"#1E2D3E":G,fontWeight:800,cursor:hasVoted?"default":"pointer",fontSize:11,fontFamily:"Nunito,sans-serif",opacity:hasVoted&&!isMyVote?.5:1}}>
+                        {isMyVote?"★ Mein Votum":"Abstimmen"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            <div style={{...sC,background:"rgba(212,146,10,.08)",border:"1px solid rgba(212,146,10,.3)"}}>
+              <div style={{fontWeight:800,fontSize:12,color:G,marginBottom:10}}>📤 Foto hinzufügen</div>
+              <input value={newFotoUrl} onChange={e=>setNewFotoUrl(e.target.value)} placeholder="https://... (direkte Bild-URL)" style={{width:"100%",background:"rgba(255,255,255,.09)",border:"1px solid "+C.bo,borderRadius:9,padding:"8px 10px",color:C.tx,fontSize:12,fontFamily:"Nunito,sans-serif",outline:"none",boxSizing:"border-box",marginBottom:7}}/>
+              <input value={newFotoCaption} onChange={e=>setNewFotoCaption(e.target.value)} placeholder="Bildunterschrift (optional)" style={{width:"100%",background:"rgba(255,255,255,.09)",border:"1px solid "+C.bo,borderRadius:9,padding:"8px 10px",color:C.tx,fontSize:12,fontFamily:"Nunito,sans-serif",outline:"none",boxSizing:"border-box",marginBottom:7}}/>
+              <div style={{display:"flex",gap:7}}>
+                <select value={newFotoWho} onChange={e=>setNewFotoWho(e.target.value)} style={{flex:1,background:"rgba(255,255,255,.09)",border:"1px solid "+C.bo,borderRadius:9,padding:"8px 10px",color:C.tx,fontSize:12,fontFamily:"Nunito,sans-serif",outline:"none"}}>
+                  {allDads.map(d=><option key={d} value={d}>{d}</option>)}
+                </select>
+                <button onClick={()=>{if(!newFotoUrl.trim())return;const id="f"+Date.now();syncFotoVotes({...fotoVotes,[id]:{url:newFotoUrl.trim(),caption:newFotoCaption.trim(),submittedBy:newFotoWho,votes:0}});setNewFotoUrl("");setNewFotoCaption("");}} style={{padding:"8px 16px",borderRadius:9,background:C.gd,border:"none",color:"#fff",fontWeight:800,cursor:"pointer",fontSize:12,fontFamily:"Nunito,sans-serif"}}>Hochladen</button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* NAV */}
         <nav style={{position:"fixed",bottom:0,left:0,right:0,background:"rgba(28,43,58,.97)",backdropFilter:"blur(20px)",borderTop:"1px solid rgba(255,255,255,.18)",display:"flex",justifyContent:"space-around",padding:"7px 0 13px",zIndex:100}}>
