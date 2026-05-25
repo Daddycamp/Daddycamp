@@ -268,7 +268,7 @@ export default function App(){
     return () => unsubs.forEach(u => u());
   }, []);
   // ── Helpers ──────────────────────────────────────────────
-  const allDads = fams.map(f => f.first);
+  const allDads = Array.isArray(fams) ? fams.map(f => f.first) : DADS;
   const aKey = item => item.replace(/[^a-zA-Z0-9]/g,"_");
   const getA  = item => asgn[aKey(item)] || [];
   const togA  = (item,dad) => {
@@ -604,7 +604,7 @@ export default function App(){
                       const name=k.replace(/[👦👧]/gu,"").trim();
                       return{first:name||k,g:isGirl?"👧":"👦",st:"yes"};
                     });
-                    syncFams([...fams,{id:Date.now(),first,last,dSt:"yes",reg:false,paid:false,kids}]);
+                    syncFams([...(Array.isArray(fams)?fams:[...FAM0]),{id:Date.now(),first,last,dSt:"yes",reg:false,paid:false,kids}]);
                     setNewFamFirst("");setNewFamLast("");setNewKids("");setShowAddFam(false);
                   }} style={{width:"100%",padding:"8px",borderRadius:9,background:"rgba(59,130,246,.2)",border:"1px solid rgba(59,130,246,.4)",color:"#60A5FA",fontWeight:800,cursor:"pointer",fontSize:13,fontFamily:"Nunito,sans-serif"}}>Familie hinzufügen</button>
                 </div>
@@ -1239,14 +1239,14 @@ export default function App(){
           <div>
             <div style={sT}>📸 Foto-Abstimmung</div>
             <p style={{fontSize:12,color:C.tm,marginBottom:14}}>Nach dem Camp: Jeder lädt sein Lieblingsfoto hoch, alle stimmen ab.</p>
-            {Object.keys(fotoVotes).length===0 && (
+            {Object.keys(fotoVotes||{}).length===0 && (
               <div style={{textAlign:"center",padding:"28px 16px",background:C.bc,border:"1px solid "+C.bo,borderRadius:14,marginBottom:14}}>
                 <div style={{fontSize:40,marginBottom:8}}>📷</div>
                 <div style={{fontWeight:700,fontSize:14,marginBottom:4}}>Noch keine Fotos</div>
                 <div style={{fontSize:12,color:C.tm}}>Nach dem Camp können alle ihr Lieblingsfoto hochladen.</div>
               </div>
             )}
-            {Object.entries(fotoVotes).sort((a,b)=>b[1].votes-a[1].votes).map(([id,foto])=>{
+            {Object.entries(fotoVotes||{}).sort((a,b)=>b[1].votes-a[1].votes).map(([id,foto])=>{
               const isMyVote=myFotoVote===id;
               const hasVoted=myFotoVote!==null;
               return (
@@ -1256,7 +1256,7 @@ export default function App(){
                     {foto.caption && <div style={{fontSize:12,fontStyle:"italic",color:C.tm,marginBottom:7}}>"{foto.caption}"</div>}
                     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                       <div style={{fontSize:11,color:C.tf}}>von {foto.submittedBy} · {foto.votes||0} Stimme{(foto.votes||0)!==1?"n":""}</div>
-                      <button onClick={()=>{if(hasVoted)return;syncFotoVotes({...fotoVotes,[id]:{...foto,votes:(foto.votes||0)+1}});syncMyFotoVote(id);}} style={{padding:"5px 14px",borderRadius:20,background:isMyVote?G:"rgba(212,146,10,.17)",border:"1px solid "+G,color:isMyVote?"#1E2D3E":G,fontWeight:800,cursor:hasVoted?"default":"pointer",fontSize:11,fontFamily:"Nunito,sans-serif",opacity:hasVoted&&!isMyVote?.5:1}}>
+                      <button onClick={()=>{if(hasVoted)return;syncFotoVotes({...(fotoVotes||{}),[id]:{...foto,votes:(foto.votes||0)+1}});syncMyFotoVote(id);}} style={{padding:"5px 14px",borderRadius:20,background:isMyVote?G:"rgba(212,146,10,.17)",border:"1px solid "+G,color:isMyVote?"#1E2D3E":G,fontWeight:800,cursor:hasVoted?"default":"pointer",fontSize:11,fontFamily:"Nunito,sans-serif",opacity:hasVoted&&!isMyVote?.5:1}}>
                         {isMyVote?"★ Mein Votum":"Abstimmen"}
                       </button>
                     </div>
@@ -1272,7 +1272,7 @@ export default function App(){
                 <select value={newFotoWho} onChange={e=>setNewFotoWho(e.target.value)} style={{flex:1,background:"rgba(255,255,255,.09)",border:"1px solid "+C.bo,borderRadius:9,padding:"8px 10px",color:C.tx,fontSize:12,fontFamily:"Nunito,sans-serif",outline:"none"}}>
                   {allDads.map(d=><option key={d} value={d}>{d}</option>)}
                 </select>
-                <button onClick={()=>{if(!newFotoUrl.trim())return;const id="f"+Date.now();syncFotoVotes({...fotoVotes,[id]:{url:newFotoUrl.trim(),caption:newFotoCaption.trim(),submittedBy:newFotoWho,votes:0}});setNewFotoUrl("");setNewFotoCaption("");}} style={{padding:"8px 16px",borderRadius:9,background:C.gd,border:"none",color:"#fff",fontWeight:800,cursor:"pointer",fontSize:12,fontFamily:"Nunito,sans-serif"}}>Hochladen</button>
+                <button onClick={()=>{if(!newFotoUrl.trim())return;const id="f"+Date.now();syncFotoVotes({...(fotoVotes||{}),[id]:{url:newFotoUrl.trim(),caption:newFotoCaption.trim(),submittedBy:newFotoWho,votes:0}});setNewFotoUrl("");setNewFotoCaption("");}} style={{padding:"8px 16px",borderRadius:9,background:C.gd,border:"none",color:"#fff",fontWeight:800,cursor:"pointer",fontSize:12,fontFamily:"Nunito,sans-serif"}}>Hochladen</button>
               </div>
             </div>
           </div>
