@@ -1041,6 +1041,7 @@ export default function App(){
  style={{width:"100%",padding:"8px",borderRadius:9,background:C.gd,border:"none",color:"#fff",fontWeight:800,cursor:"pointer",fontSize:12,fontFamily:"Nunito,sans-serif"}}>Abstimmung erstellen</button>
                 </div>
               </div>
+            </div>
             )}
 
             {funTab==="teilnahme" && (
@@ -1119,7 +1120,7 @@ export default function App(){
                   })}
                 </div>
               </div>
-              </div>
+            </div>
             )}
 
             {funTab==="lied" && (
