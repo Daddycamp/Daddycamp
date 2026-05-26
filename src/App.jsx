@@ -367,7 +367,7 @@ export default function App(){
           <div style={{background:"rgba(255,255,255,.06)",borderRadius:8,padding:"8px 10px",marginTop:2,marginBottom:2}}>
             <div style={{fontSize:10,color:C.tm,marginBottom:6,textTransform:"uppercase",letterSpacing:1}}>Wer bringt es?</div>
             <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
-              {DADS.map(d => {
+              {allDads.map(d => {
                 const sel = ass.includes(d);
                 return (
                   <button key={d} onClick={e=>{e.stopPropagation();togA(item,d);}} style={{padding:"4px 10px",borderRadius:20,border:"1px solid "+(sel?C.tl:C.bo),background:sel?"rgba(16,185,129,.2)":"rgba(255,255,255,.07)",color:sel?C.tl:C.tx,fontSize:11,fontWeight:sel?700:400,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{d}</button>
@@ -521,7 +521,7 @@ export default function App(){
               <div style={{borderTop:"1px solid rgba(212,146,10,.25)",paddingTop:8}}>
                 <div style={{fontSize:9,color:C.tm,textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:6}}>Wer hat eingetragen & abgerechnet?</div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:3}}>
-                  {DADS.map(dad => {
+                  {allDads.map(dad => {
                     const done = tricountDone[dad];
                     return (
                       <div key={dad} onClick={()=>syncTricountDone({...tricountDone,[dad]:!tricountDone[dad]})} style={{display:"flex",alignItems:"center",gap:3,padding:"2px 7px",borderRadius:20,background:done?"rgba(16,185,129,.18)":"transparent",cursor:"pointer"}}>
@@ -555,7 +555,10 @@ export default function App(){
                         <div style={{fontWeight:800,fontSize:13}}>{f.id===1?"👑 ":""}{f.first} {f.last}{f.reg&&f.paid?" ✅":""}</div>
                         <div style={{fontSize:10,color:C.tm,marginTop:1}}>{(f.kids||[]).length} {(f.kids||[]).length===1?"Kind":"Kinder"}</div>
                       </div>
-                      <button onClick={e=>{e.stopPropagation();const ns=cyc(fs);syncFams(fams.map(x=>x.id!==f.id?x:{...x,dSt:ns,kids:x.kids.map(k=>({...k,st:ns}))}));}} style={{background:cfg.bg,border:"1px solid "+cfg.b,color:cfg.c,borderRadius:20,padding:"4px 12px",fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{cfg.l}</button>
+                      {typeof f.id === "number" && f.id > 100000 && (
+                  <button onClick={e=>{e.stopPropagation();if(window.confirm(f.first+" "+f.last+" löschen?")){syncFams(fams.filter(x=>x.id!==f.id));if(expFam===f.id)setExpFam(null);}}} style={{width:26,height:26,borderRadius:6,border:"1px solid rgba(239,68,68,.4)",background:"transparent",color:"rgba(239,68,68,.7)",cursor:"pointer",fontSize:13,flexShrink:0}}>🗑</button>
+                )}
+                <button onClick={e=>{e.stopPropagation();const ns=cyc(fs);syncFams(fams.map(x=>x.id!==f.id?x:{...x,dSt:ns,kids:x.kids.map(k=>({...k,st:ns}))}));}} style={{background:cfg.bg,border:"1px solid "+cfg.b,color:cfg.c,borderRadius:20,padding:"4px 12px",fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{cfg.l}</button>
                     </div>
                   </div>
                   {isO && (
