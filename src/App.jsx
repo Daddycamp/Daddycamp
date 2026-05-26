@@ -451,15 +451,18 @@ export default function App(){
             {/* Einkäufe */}
             {unassigned.length>0 ? (
               <div onClick={()=>{setTab("org");setOrgTab("einkauf");}} style={{background:"rgba(239,68,68,.1)",border:"1px solid rgba(239,68,68,.35)",borderRadius:14,padding:"12px 14px",marginBottom:12,cursor:"pointer"}}>
-                <div style={{fontWeight:700,fontSize:11,color:G,marginBottom:5,textTransform:"uppercase",letterSpacing:2}}>🛒 Einkäufe</div>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}><span style={{fontWeight:800,fontSize:13,color:C.rd}}>⚠️ Nicht zugewiesen</span><span style={{fontSize:11,background:"rgba(239,68,68,.2)",color:C.rd,padding:"2px 9px",borderRadius:20,fontWeight:700}}>{unassigned.length}</span></div>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
+                  <div style={{fontWeight:700,fontSize:11,color:G,textTransform:"uppercase",letterSpacing:2}}>🛒 Einkäufe</div>
+                  <span style={{fontSize:11,background:"rgba(16,185,129,.2)",color:C.tl,padding:"2px 9px",borderRadius:20,fontWeight:700}}>✓ {allShopItems.length-unassigned.length} vergeben</span>
+                </div>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}><span style={{fontWeight:800,fontSize:13,color:C.rd}}>⚠️ {unassigned.length} nicht zugewiesen</span></div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:4}}>{unassigned.slice(0,5).map(i=><span key={i} style={{fontSize:10,background:"rgba(239,68,68,.12)",border:"1px solid rgba(239,68,68,.25)",borderRadius:20,padding:"2px 7px",color:"rgba(255,200,200,.9)"}}>{i}</span>)}{unassigned.length>5&&<span style={{fontSize:10,color:"rgba(239,68,68,.6)"}}>+{unassigned.length-5} mehr</span>}</div>
               </div>
             ) : (
               <div onClick={()=>{setTab("org");setOrgTab("einkauf");}} style={{background:"rgba(16,185,129,.12)",border:"2px solid rgba(16,185,129,.55)",borderRadius:14,padding:"12px 14px",marginBottom:12,cursor:"pointer"}}>
                 <div style={{display:"flex",alignItems:"center",gap:10}}>
                   <div style={{width:38,height:38,borderRadius:"50%",background:"rgba(16,185,129,.25)",border:"2px solid "+C.tl,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>🛒</div>
-                  <div><div style={{fontWeight:800,fontSize:14,color:C.tl}}>Alle Einkäufe vergeben!</div><div style={{fontSize:11,color:C.tm,marginTop:1}}>Jede Sache hat einen Verantwortlichen.</div></div>
+                  <div><div style={{fontWeight:800,fontSize:14,color:C.tl}}>Alle Einkäufe vergeben!</div><div style={{fontSize:11,color:C.tm,marginTop:1}}>✓ {allShopItems.length} Sachen zugewiesen</div></div>
                 </div>
               </div>
             )}
@@ -494,7 +497,7 @@ export default function App(){
                   </div>
                 );
               })()}
-              <div onClick={()=>{setTab("fun");setFunTab("stats");}} style={{marginTop:10,padding:"9px 14px",background:"rgba(212,146,10,.1)",border:"1px solid rgba(212,146,10,.35)",borderRadius:10,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <div onClick={()=>{setTab("fun");setFunTab("teilnahme");}} style={{marginTop:10,padding:"9px 14px",background:"rgba(212,146,10,.1)",border:"1px solid rgba(212,146,10,.35)",borderRadius:10,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                 <div><div style={{fontSize:12,fontWeight:700,color:G}}>📊 Wer war wann dabei?</div><div style={{fontSize:10,color:C.tm,marginTop:1}}>Zur Teilnehmer-Statistik</div></div>
                 <div style={{color:G,fontSize:16}}>→</div>
               </div>
