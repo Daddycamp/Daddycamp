@@ -274,7 +274,9 @@ export default function App(){
     return () => unsubs.forEach(u => u());
   }, []);
   // ── Helpers ──────────────────────────────────────────────
-  const allDads = Array.isArray(fams) ? fams.map(f => f.first) : DADS;
+  const allDads = Array.isArray(fams)
+    ? fams.filter(f => f.dSt==="yes" && f.reg===true).map(f => f.first)
+    : DADS;
   const aKey = item => item.replace(/[^a-zA-Z0-9]/g,"_");
   const getA  = item => asgn[aKey(item)] || [];
   const togA  = (item,dad) => {
@@ -998,7 +1000,7 @@ export default function App(){
                     {unassigned.length>0 && <div style={{background:"rgba(239,68,68,.08)",border:"1px solid rgba(239,68,68,.22)",borderRadius:12,padding:"10px 14px",marginBottom:12}}><div style={{fontWeight:800,fontSize:11,color:C.rd,marginBottom:6}}>Noch nicht vergeben ({unassigned.length})</div>{unassigned.map(i=><div key={i} style={{fontSize:11,color:C.tm,padding:"2px 0"}}>• {i}</div>)}</div>}
                     <div style={{background:"rgba(255,255,255,.05)",border:"1px solid "+C.bl,borderRadius:11,padding:"11px 13px"}}>
                       <div style={{fontSize:9,color:C.tm,textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:7}}>Schnellzuweisung</div>
-                      <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>{DADS.map(d=><button key={d} onClick={()=>{const nextAsgn={...asgn};allShopItems.forEach(item=>{const k=aKey(item);const c=asgn[k]||[];if(!c.includes(d))nextAsgn[k]=[...c,d];});syncAsgn(nextAsgn);}} style={{padding:"4px 10px",borderRadius:20,border:"1px solid "+C.bl,background:"rgba(255,255,255,.07)",color:C.tm,fontSize:10,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{d}</button>)}</div>
+                      <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>{allDads.map(d=><button key={d} onClick={()=>{const nextAsgn={...asgn};allShopItems.forEach(item=>{const k=aKey(item);const c=asgn[k]||[];if(!c.includes(d))nextAsgn[k]=[...c,d];});syncAsgn(nextAsgn);}} style={{padding:"4px 10px",borderRadius:20,border:"1px solid "+C.bl,background:"rgba(255,255,255,.07)",color:C.tm,fontSize:10,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{d}</button>)}</div>
                       <button onClick={()=>syncAsgn({})} style={{width:"100%",padding:"6px",borderRadius:9,border:"1px solid rgba(239,68,68,.35)",background:"transparent",color:"rgba(239,68,68,.6)",fontSize:10,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>Alle Zuweisungen zurücksetzen</button>
                     </div>
                   </div>
@@ -1006,7 +1008,7 @@ export default function App(){
 
                 {packCat==="overview" && (
                   <div>
-                    {DADS.map(d => {
+                    {allDads.map(d => {
                       const items = dadItems(d);
                       return (
                         <div key={d} style={{...sC,borderLeft:"3px solid "+(items.length?C.tl:C.bl)}}>
@@ -1046,7 +1048,7 @@ export default function App(){
                     <div key={cat} style={sC}>
                       <div style={{fontWeight:800,fontSize:13,marginBottom:9}}>{cat}</div>
                       <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:7}}>
-                        {DADS.map(d => {
+                        {allDads.map(d => {
                           const cnt=vs[d]||0, isV=myV===d;
                           return (
                             <button key={d} onClick={()=>{if(myTV[cat])return;syncTVotes({...tVotes,[k]:{...(tVotes[k]||{}),[d]:((tVotes[k]||{})[d]||0)+1}});syncMyTV({...myTV,[cat]:d});}} disabled={!!myV&&!isV} style={{padding:"5px 12px",borderRadius:20,border:"1px solid "+(isV?G:cnt?"rgba(16,185,129,.4)":C.bl),background:isV?"rgba(212,146,10,.2)":cnt?"rgba(16,185,129,.12)":"rgba(255,255,255,.05)",color:isV?G:cnt?C.tl:C.tm,fontSize:11,fontWeight:isV||cnt?700:400,cursor:myV&&!isV?"default":"pointer",fontFamily:"Nunito,sans-serif",opacity:myV&&!isV?.5:1}}>
