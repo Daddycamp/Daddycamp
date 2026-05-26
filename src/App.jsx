@@ -180,6 +180,9 @@ export default function App(){
 
   // Tabs: Camp | Crew | Ausflug (Ort+Plan) | Org (Pack+Einkauf) | Fun
   const [tab,setTab]   = useState("home");
+  const [unlocked,setUnlocked] = useState(() => localStorage.getItem("dc_auth")==="ok");
+  const [pwInput,setPwInput]   = useState("");
+  const [pwError,setPwError]   = useState(false);
   const [ausflugTab,setAusflugTab] = useState("ort");
   const [orgTab,setOrgTab]  = useState("pack");
   const [packCat,setPackCat] = useState(null);
@@ -381,6 +384,30 @@ export default function App(){
 
   return (
     <>
+      {!unlocked && (
+        <div style={{minHeight:"100vh",background:"#1E2D3E",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:24,fontFamily:"Nunito,sans-serif"}}>
+          <div style={{fontSize:52,marginBottom:12}}>⛺</div>
+          <div style={{fontFamily:"Oswald,sans-serif",fontSize:32,fontWeight:700,letterSpacing:6,color:"#fff",textTransform:"uppercase",marginBottom:4}}>Daddy<span style={{color:"#F0B429"}}>camp</span></div>
+          <div style={{fontSize:12,letterSpacing:3,color:"rgba(255,255,255,.6)",textTransform:"uppercase",marginBottom:32}}>Väter. Kinder. Legenden.</div>
+          <div style={{width:"100%",maxWidth:320}}>
+            <input
+              type="password"
+              value={pwInput}
+              onChange={e=>{setPwInput(e.target.value);setPwError(false);}}
+              onKeyDown={e=>{if(e.key==="Enter"){if(pwInput==="Dilfs2026"){localStorage.setItem("dc_auth","ok");setUnlocked(true);}else{setPwError(true);setPwInput("");}}}}
+              placeholder="Passwort eingeben..."
+              style={{width:"100%",background:"rgba(255,255,255,.1)",border:"1px solid "+(pwError?"#EF4444":"rgba(255,255,255,.25)"),borderRadius:12,padding:"12px 16px",color:"#fff",fontSize:16,fontFamily:"Nunito,sans-serif",outline:"none",boxSizing:"border-box",marginBottom:10}}
+              autoFocus
+            />
+            {pwError && <div style={{color:"#EF4444",fontSize:12,marginBottom:8,textAlign:"center"}}>Falsches Passwort – bitte nochmal versuchen</div>}
+            <button
+              onClick={()=>{if(pwInput==="Dilfs2026"){localStorage.setItem("dc_auth","ok");setUnlocked(true);}else{setPwError(true);setPwInput("");}}}
+              style={{width:"100%",padding:"12px",borderRadius:12,background:"#F0B429",border:"none",color:"#1E2D3E",fontWeight:800,fontSize:16,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}
+            >Einloggen</button>
+          </div>
+        </div>
+      )}
+      {unlocked && <>
       <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 
       <div style={{minHeight:"100vh",background:C.bg,fontFamily:"Nunito,sans-serif",color:C.tx,paddingBottom:80}}>
@@ -1255,5 +1282,6 @@ export default function App(){
         </nav>
       </div>
     </>
+    }
   );
 }
