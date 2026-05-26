@@ -169,7 +169,7 @@ const ST = {
   open: {l:"Offen", s:"?", bg:"rgba(245,158,11,.15)", c:"#F59E0B", b:"rgba(245,158,11,.4)"},
 };
 const cyc = s => s==="yes"?"no":s==="no"?"open":"yes";
-function fst(f){const a=[f.dSt,...f.kids.map(k=>k.st)];if(a.every(x=>x==="yes"))return"yes";if(a.every(x=>x==="no"))return"no";return"open";}
+function fst(f){const a=[f.dSt,...(f.kids||[]).map(k=>k.st)];if(a.every(x=>x==="yes"))return"yes";if(a.every(x=>x==="no"))return"no";return"open";}
 function cntdown(t){const d=t-new Date();if(d<=0)return{D:0,H:0,M:0,S:0};return{D:Math.floor(d/864e5),H:Math.floor(d%864e5/36e5),M:Math.floor(d%36e5/6e4),S:Math.floor(d%6e4/1e3)};}
 const p2 = n => String(n).padStart(2,"0");
 
@@ -256,7 +256,13 @@ export default function App(){
       }, err => console.warn("FB:", key, err));
       unsubs.push(u);
     };
-    listen("fams",setFams);listen("myVote",setMyVote);listen("asgn",setAsgn);
+    listen("fams", raw => {
+      if (Array.isArray(raw)) {
+        setFams(raw.map(f => ({...f, kids: f.kids||[]})));
+      } else if (raw && typeof raw === 'object') {
+        setFams(Object.values(raw).map(f => ({...f, kids: f.kids||[]})));
+      }
+    });listen("myVote",setMyVote);listen("asgn",setAsgn);
     listen("shops",setShops);listen("shopExtras",setShopExtras);
     listen("polls",setPolls);listen("tVotes",setTVotes);listen("myTV",setMyTV);
     listen("ctrs",setCtrs);listen("custCtrs",setCustCtrs);
@@ -292,10 +298,10 @@ export default function App(){
   const tD = fams.length;
   const tK = fams.reduce((s,f) => s+f.kids.length, 0);
   const cD = fams.filter(f => f.dSt==="yes").length;
-  const cK = fams.reduce((s,f) => s+f.kids.filter(k=>k.st==="yes").length, 0);
+  const cK = fams.reduce((s,f) => s+(f.kids||[]).filter(k=>k.st==="yes").length, 0);
   const rC = fams.filter(f => f.reg && f.paid).length;
-  const boys  = fams.reduce((s,f) => s+f.kids.filter(k=>k.g==="👦").length, 0);
-  const girls = fams.reduce((s,f) => s+f.kids.filter(k=>k.g==="👧").length, 0);
+  const boys  = fams.reduce((s,f) => s+(f.kids||[]).filter(k=>k.g==="👦").length, 0);
+  const girls = fams.reduce((s,f) => s+(f.kids||[]).filter(k=>k.g==="👧").length, 0);
 
   // ── Synced setters ──────────────────────────────────────────────────────
   const syncFams         = v => { setFams(v);         fbSet("fams", v); };
@@ -545,7 +551,7 @@ export default function App(){
                       <button onClick={()=>setExpFam(isO?null:f.id)} style={{background:"none",border:"none",color:C.tf,cursor:"pointer",fontSize:10,padding:"2px 5px",fontFamily:"Nunito,sans-serif"}}>{isO?"▲":"▼"}</button>
                       <div style={{flex:1,minWidth:0}}>
                         <div style={{fontWeight:800,fontSize:13}}>{f.id===1?"👑 ":""}{f.first} {f.last}{f.reg&&f.paid?" ✅":""}</div>
-                        <div style={{fontSize:10,color:C.tm,marginTop:1}}>{f.kids.length} {f.kids.length===1?"Kind":"Kinder"}</div>
+                        <div style={{fontSize:10,color:C.tm,marginTop:1}}>{(f.kids||[]).length} {(f.kids||[]).length===1?"Kind":"Kinder"}</div>
                       </div>
                       <button onClick={e=>{e.stopPropagation();const ns=cyc(fs);syncFams(fams.map(x=>x.id!==f.id?x:{...x,dSt:ns,kids:x.kids.map(k=>({...k,st:ns}))}));}} style={{background:cfg.bg,border:"1px solid "+cfg.b,color:cfg.c,borderRadius:20,padding:"4px 12px",fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{cfg.l}</button>
                     </div>
