@@ -219,11 +219,6 @@ export default function App(){
   const [newFamFirst,setNewFamFirst] = useState("");
   const [newFamLast,setNewFamLast]  = useState("");
   const [newKids,setNewKids]        = useState("");
-  const [fotoVotes,setFotoVotes]    = useState({});
-  const [myFotoVote,setMyFotoVote]  = useState(null);
-  const [newFotoUrl,setNewFotoUrl]  = useState("");
-  const [newFotoCaption,setNewFotoCaption] = useState("");
-  const [newFotoWho,setNewFotoWho]  = useState("Stefan");
   const [tricountDone,setTricountDone] = useState({});
   const [sched,setSched] = useState(SCHED0);
   const [editSlot,setEditSlot] = useState(null);
@@ -269,8 +264,6 @@ export default function App(){
     listen("lieder",setLieder);listen("tricountDone",setTricountDone);
     listen("att",setAtt);listen("pkChk",setPkChk);listen("packExtra",setPackExtra);
     listen("sched",setSched);
-    listen("fotoVotes",setFotoVotes);
-    listen("myFotoVote",setMyFotoVote);
     return () => unsubs.forEach(u => u());
   }, []);
   // ── Helpers ──────────────────────────────────────────────
@@ -323,8 +316,6 @@ export default function App(){
   const syncPkChk        = v => { setPkChk(v);        fbSet("pkChk", v); };
   const syncPackExtra    = v => { setPackExtra(v);    fbSet("packExtra", v); };
   const syncSched        = v => { setSched(v);        fbSet("sched", v); };
-  const syncFotoVotes   = v => { setFotoVotes(v);   fbSet("fotoVotes", v); };
-  const syncMyFotoVote  = v => { setMyFotoVote(v);  fbSet("myFotoVote", v); };
 
   function addLied() {
     const s=newLiedSong.trim(), a=newLiedArtist.trim(), y=newLiedYr.trim();
@@ -714,7 +705,7 @@ export default function App(){
                   const maxV=Math.max(...dests.map(x=>x.votes),1), pct=Math.round(d.votes/maxV*100), isV=myVote===d.id, isE=expDest===d.id;
                                     return (
                     <div key={d.id} style={{marginBottom:9}}>
-                      <div onClick={()=>setExpDest(isE?null:d.id)} style={{background:isV?"rgba(212,146,10,.14)":C.bc,border:"1px solid "+(isV?G:C.bo),borderRadius:isE?"14px 14px 0 0":14,padding:"13px 14px",cursor:"pointer",opacity:1}}>
+                      <div onClick={()=>setExpDest(isE?null:d.id)} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:isE?"14px 14px 0 0":14,padding:"13px 14px",cursor:"pointer",opacity:1}}>
                         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                           <div style={{display:"flex",gap:10,alignItems:"center"}}>
                             <span style={{fontSize:24}}>{d.emoji}</span>
@@ -724,7 +715,7 @@ export default function App(){
                             </div>
                           </div>
                           <div style={{textAlign:"right",minWidth:55,flexShrink:0}}>
-                            <><div style={{fontSize:12,fontWeight:800,color:G}}>{isV?"★":""}{d.votes}</div><div style={{fontSize:9,color:C.tf}}>Stimmen</div></>
+                            <><div style={{fontSize:12,fontWeight:800,color:G}}>{d.votes}</div><div style={{fontSize:9,color:C.tf}}>Stimmen</div></>
                           </div>
                         </div>
                         <div style={{marginTop:8,background:"rgba(255,255,255,.1)",borderRadius:3,height:4}}><div style={{width:pct+"%",height:"100%",borderRadius:3,background:isV?G:C.tl,transition:"width .5s"}}/></div>
@@ -1037,7 +1028,7 @@ export default function App(){
         {tab==="fun" && (
           <div>
             <div style={{display:"flex",gap:5,marginBottom:16,flexWrap:"wrap"}}>
-              {[{id:"trophies",l:"🏆 Trophäen"},{id:"polls",l:"📢 Abstimmungen"},{id:"teilnahme",l:"📊 Teilnahme"},{id:"foto",l:"📸 Foto-Vote"},{id:"lied",l:"🎵 Lied"},{id:"ctr",l:"🍺 Verbrauch"}].map(x => (
+              {[{id:"trophies",l:"🏆 Trophäen"},{id:"polls",l:"📢 Abstimmungen"},{id:"teilnahme",l:"📊 Teilnahme"},{id:"lied",l:"🎵 Lied"},{id:"ctr",l:"🍺 Verbrauch"}].map(x => (
                 <button key={x.id} onClick={()=>setFunTab(x.id)} style={{padding:"6px 11px",borderRadius:9,border:"1px solid "+(funTab===x.id?G:C.bo),background:funTab===x.id?"rgba(212,146,10,.16)":C.bc,color:funTab===x.id?G:C.tm,fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{x.l}</button>
               ))}
             </div>
@@ -1249,48 +1240,7 @@ export default function App(){
 
         </div>
 
-        {tab==="fun" && funTab==="foto" && (
-          <div>
-            <div style={sT}>📸 Foto-Abstimmung</div>
-            <p style={{fontSize:12,color:C.tm,marginBottom:14}}>Nach dem Camp: Jeder lädt sein Lieblingsfoto hoch, alle stimmen ab.</p>
-            {Object.keys(fotoVotes||{}).length===0 && (
-              <div style={{textAlign:"center",padding:"28px 16px",background:C.bc,border:"1px solid "+C.bo,borderRadius:14,marginBottom:14}}>
-                <div style={{fontSize:40,marginBottom:8}}>📷</div>
-                <div style={{fontWeight:700,fontSize:14,marginBottom:4}}>Noch keine Fotos</div>
-                <div style={{fontSize:12,color:C.tm}}>Nach dem Camp können alle ihr Lieblingsfoto hochladen.</div>
-              </div>
-            )}
-            {Object.entries(fotoVotes||{}).sort((a,b)=>b[1].votes-a[1].votes).map(([id,foto])=>{
-              const isMyVote=myFotoVote===id;
-              const hasVoted=myFotoVote!==null;
-              return (
-                <div key={id} style={{background:isMyVote?"rgba(212,146,10,.14)":C.bc,border:"1px solid "+(isMyVote?G:C.bo),borderRadius:14,overflow:"hidden",marginBottom:12}}>
-                  {foto.url && <img src={foto.url} alt="" style={{width:"100%",maxHeight:220,objectFit:"cover",display:"block"}} onError={e=>e.target.style.display="none"}/>}
-                  <div style={{padding:"10px 13px"}}>
-                    {foto.caption && <div style={{fontSize:12,fontStyle:"italic",color:C.tm,marginBottom:7}}>"{foto.caption}"</div>}
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                      <div style={{fontSize:11,color:C.tf}}>von {foto.submittedBy} · {foto.votes||0} Stimme{(foto.votes||0)!==1?"n":""}</div>
-                      <button onClick={()=>{if(hasVoted)return;syncFotoVotes({...(fotoVotes||{}),[id]:{...foto,votes:(foto.votes||0)+1}});syncMyFotoVote(id);}} style={{padding:"5px 14px",borderRadius:20,background:isMyVote?G:"rgba(212,146,10,.17)",border:"1px solid "+G,color:isMyVote?"#1E2D3E":G,fontWeight:800,cursor:hasVoted?"default":"pointer",fontSize:11,fontFamily:"Nunito,sans-serif",opacity:hasVoted&&!isMyVote?.5:1}}>
-                        {isMyVote?"★ Mein Votum":"Abstimmen"}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-            <div style={{...sC,background:"rgba(212,146,10,.08)",border:"1px solid rgba(212,146,10,.3)"}}>
-              <div style={{fontWeight:800,fontSize:12,color:G,marginBottom:10}}>📤 Foto hinzufügen</div>
-              <input value={newFotoUrl} onChange={e=>setNewFotoUrl(e.target.value)} placeholder="https://... (direkte Bild-URL)" style={{width:"100%",background:"rgba(255,255,255,.09)",border:"1px solid "+C.bo,borderRadius:9,padding:"8px 10px",color:C.tx,fontSize:12,fontFamily:"Nunito,sans-serif",outline:"none",boxSizing:"border-box",marginBottom:7}}/>
-              <input value={newFotoCaption} onChange={e=>setNewFotoCaption(e.target.value)} placeholder="Bildunterschrift (optional)" style={{width:"100%",background:"rgba(255,255,255,.09)",border:"1px solid "+C.bo,borderRadius:9,padding:"8px 10px",color:C.tx,fontSize:12,fontFamily:"Nunito,sans-serif",outline:"none",boxSizing:"border-box",marginBottom:7}}/>
-              <div style={{display:"flex",gap:7}}>
-                <select value={newFotoWho} onChange={e=>setNewFotoWho(e.target.value)} style={{flex:1,background:"rgba(255,255,255,.09)",border:"1px solid "+C.bo,borderRadius:9,padding:"8px 10px",color:C.tx,fontSize:12,fontFamily:"Nunito,sans-serif",outline:"none"}}>
-                  {allDads.map(d=><option key={d} value={d}>{d}</option>)}
-                </select>
-                <button onClick={()=>{if(!newFotoUrl.trim())return;const id="f"+Date.now();syncFotoVotes({...(fotoVotes||{}),[id]:{url:newFotoUrl.trim(),caption:newFotoCaption.trim(),submittedBy:newFotoWho,votes:0}});setNewFotoUrl("");setNewFotoCaption("");}} style={{padding:"8px 16px",borderRadius:9,background:C.gd,border:"none",color:"#fff",fontWeight:800,cursor:"pointer",fontSize:12,fontFamily:"Nunito,sans-serif"}}>Hochladen</button>
-              </div>
-            </div>
-          </div>
-        )}
+        
 
         {/* NAV */}
         <nav style={{position:"fixed",bottom:0,left:0,right:0,background:"rgba(28,43,58,.97)",backdropFilter:"blur(20px)",borderTop:"1px solid rgba(255,255,255,.18)",display:"flex",justifyContent:"space-around",padding:"7px 0 13px",zIndex:100}}>
