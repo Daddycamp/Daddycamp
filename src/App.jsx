@@ -428,139 +428,7 @@ export default function App(){
         {/* ══ CAMP ════════════════════════════════════════════ */}
         {tab==="home" && (
           <div>
-            {/* Countdown */}
-            <div style={{display:"flex",gap:7,marginBottom:16}}>
-              {[{l:"Tage",v:clock.D},{l:"Std",v:clock.H},{l:"Min",v:clock.M},{l:"Sek",v:clock.S}].map(x => (
-                <div key={x.l} style={{flex:1,background:C.bgL,border:"1px solid "+C.bo,borderRadius:12,padding:"12px 5px",textAlign:"center"}}>
-                  <div style={{fontSize:30,fontWeight:800,fontFamily:"Oswald,sans-serif",color:G}}>{p2(x.v)}</div>
-                  <div style={{fontSize:9,color:C.tm,textTransform:"uppercase",letterSpacing:2,marginTop:2}}>{x.l}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Stats */}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:14}}>
-              <div style={{...sC,padding:"12px 6px",textAlign:"center",marginBottom:0}}><div style={{fontSize:18}}>👨</div><div style={{fontSize:20,fontWeight:800,color:G,fontFamily:"Oswald,sans-serif"}}>{cD}/{tD}</div><div style={{fontSize:9,color:C.tm,textTransform:"uppercase",letterSpacing:1,marginTop:1}}>Väter</div></div>
-              <div style={{...sC,padding:"12px 6px",textAlign:"center",marginBottom:0}}><div style={{fontSize:18}}>👧</div><div style={{fontSize:20,fontWeight:800,color:G,fontFamily:"Oswald,sans-serif"}}>{cK}/{tK}</div><div style={{fontSize:9,color:C.tm,textTransform:"uppercase",letterSpacing:1,marginTop:1}}>Kinder</div><div style={{fontSize:10,color:C.tf,marginTop:3}}>{"👦"+boys+" 👧"+girls}</div></div>
-              <div style={{...sC,padding:"12px 6px",textAlign:"center",marginBottom:0}}><div style={{fontSize:18}}>🌙</div><div style={{fontSize:20,fontWeight:800,color:G,fontFamily:"Oswald,sans-serif"}}>2</div><div style={{fontSize:9,color:C.tm,textTransform:"uppercase",letterSpacing:1,marginTop:1}}>Nächte</div></div>
-            </div>
-
-            {/* Deadline banner */}
-            <div style={{background:dlPast?"rgba(16,185,129,.08)":"rgba(239,68,68,.09)",border:"1px solid "+(dlPast?"rgba(16,185,129,.3)":"rgba(239,68,68,.3)"),borderRadius:10,padding:"8px 14px",marginBottom:8,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-              <div style={{fontSize:11,color:dlPast?C.tl:C.rd,fontWeight:700}}>{dlPast?"✅ Anmeldefrist abgelaufen":"⏰ Anmeldefrist: 18. Mai 2026"}</div>
-              {!dlPast && <div style={{fontSize:11,fontWeight:800,color:C.rd,background:"rgba(239,68,68,.15)",borderRadius:20,padding:"2px 10px"}}>{dlDiff} {dlDiff===1?"Tag":"Tage"}</div>}
-            </div>
-
-            {/* Anmeldungen */}
-            <div onClick={()=>setTab("crew")} style={{background:rC===tD?"rgba(16,185,129,.12)":"rgba(212,146,10,.1)",border:"2px solid "+(rC===tD?"rgba(16,185,129,.55)":"rgba(212,146,10,.35)"),borderRadius:14,padding:"12px 14px",marginBottom:12,cursor:"pointer"}}>
-              {rC===tD ? (
-                <div style={{display:"flex",alignItems:"center",gap:10}}>
-                  <div style={{width:38,height:38,borderRadius:"50%",background:"rgba(16,185,129,.25)",border:"2px solid "+C.tl,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>✅</div>
-                  <div><div style={{fontWeight:800,fontSize:14,color:C.tl}}>Alle Familien angemeldet!</div><div style={{fontSize:11,color:C.tm,marginTop:1}}>Alle {tD} Familien: Anmeldung & Anzahlung geleistet.</div></div>
-                </div>
-              ) : (
-                <div>
-                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}><span style={{fontWeight:800,fontSize:13,color:G}}>📋 Anmeldungen</span><span style={{fontWeight:800,fontSize:12,color:G}}>{rC}/{tD}</span></div>
-                  <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>{fams.map(f=><span key={f.id} style={{fontSize:10,background:f.reg&&f.paid?"rgba(16,185,129,.15)":"rgba(255,255,255,.07)",border:"1px solid "+(f.reg&&f.paid?"rgba(16,185,129,.4)":C.bl),borderRadius:20,padding:"2px 7px",color:f.reg&&f.paid?C.tl:C.tm}}>{f.reg&&f.paid?"✓ ":""}{f.first}</span>)}</div>
-                </div>
-              )}
-            </div>
-
-            {/* Einkäufe */}
-            {unassigned.length>0 ? (
-              <div onClick={()=>{setTab("org");setOrgTab("einkauf");}} style={{background:"rgba(239,68,68,.1)",border:"1px solid rgba(239,68,68,.35)",borderRadius:14,padding:"12px 14px",marginBottom:12,cursor:"pointer"}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
-                  <div style={{fontWeight:700,fontSize:11,color:G,textTransform:"uppercase",letterSpacing:2}}>🛒 Einkäufe</div>
-                  <span style={{fontSize:11,background:"rgba(16,185,129,.2)",color:C.tl,padding:"2px 9px",borderRadius:20,fontWeight:700}}>✓ {allShopItems.length-unassigned.length} vergeben</span>
-                </div>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}><span style={{fontWeight:800,fontSize:13,color:C.rd}}>⚠️ {unassigned.length} nicht zugewiesen</span></div>
-                <div style={{display:"flex",flexWrap:"wrap",gap:4}}>{unassigned.slice(0,5).map(i=><span key={i} style={{fontSize:10,background:"rgba(239,68,68,.12)",border:"1px solid rgba(239,68,68,.25)",borderRadius:20,padding:"2px 7px",color:"rgba(255,200,200,.9)"}}>{i}</span>)}{unassigned.length>5&&<span style={{fontSize:10,color:"rgba(239,68,68,.6)"}}>+{unassigned.length-5} mehr</span>}</div>
-              </div>
-            ) : (
-              <div onClick={()=>{setTab("org");setOrgTab("einkauf");}} style={{background:"rgba(16,185,129,.12)",border:"2px solid rgba(16,185,129,.55)",borderRadius:14,padding:"12px 14px",marginBottom:12,cursor:"pointer"}}>
-                <div style={{display:"flex",alignItems:"center",gap:10}}>
-                  <div style={{width:38,height:38,borderRadius:"50%",background:"rgba(16,185,129,.25)",border:"2px solid "+C.tl,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>🛒</div>
-                  <div><div style={{fontWeight:800,fontSize:14,color:C.tl}}>Alle Einkäufe vergeben!</div><div style={{fontSize:11,color:C.tm,marginTop:1}}>✓ {allShopItems.length} Sachen zugewiesen</div></div>
-                </div>
-              </div>
-            )}
-
-            {/* Rückblicke */}
-            <div style={sC}>
-              <div style={sT}>🎞️ Rückblicke</div>
-              <div style={{display:"flex",gap:7,overflowX:"auto",paddingBottom:5}}>
-                {MEMS.map(m => (
-                  <div key={m.yr} onClick={()=>setMemYr(memYr===m.yr?null:m.yr)} style={{flexShrink:0,width:76,borderRadius:10,overflow:"hidden",border:"1px solid "+(memYr===m.yr?G:C.bo),cursor:"pointer",background:C.bgL}}>
-                    <img src={m.photo} alt="" style={{width:"100%",height:50,objectFit:"contain",background:"#1a2a3a",display:"block"}}/>
-                    <div style={{padding:"3px 0",textAlign:"center",fontSize:11,fontWeight:800,color:memYr===m.yr?G:C.tx}}>{m.yr}</div>
-                  </div>
-                ))}
-              </div>
-              {memYr!==null && (()=>{
-                const m = MEMS.find(x=>x.yr===memYr);
-                if(!m) return null;
-                return (
-                  <div style={{marginTop:10,borderRadius:10,overflow:"hidden",border:"1px solid "+C.bo}}>
-                    <img src={m.photo} alt="" style={{width:"100%",maxHeight:280,objectFit:"contain",background:"#111e2b",display:"block"}}/>
-                    <div style={{padding:"10px 12px",background:C.bgL}}>
-                      <div style={{fontWeight:800,fontSize:13}}>Daddycamp {m.yr}</div>
-                      {m.loc && <div style={{fontSize:11,color:C.tm,marginTop:2}}>📍 {m.loc}</div>}
-                      {m.note && <div style={{fontSize:11,color:C.tm,marginTop:3,fontStyle:"italic"}}>{m.note}</div>}
-                      {m.who && m.who.length>0 && (
-                        <div style={{display:"flex",flexWrap:"wrap",gap:4,marginTop:8}}>
-                          {m.who.map(n=><span key={n} style={{fontSize:10,background:"rgba(240,180,41,.12)",border:"1px solid rgba(240,180,41,.3)",borderRadius:20,padding:"2px 8px",color:G,fontWeight:600}}>{n}</span>)}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })()}
-              <div onClick={()=>{setTab("fun");setFunTab("teilnahme");}} style={{marginTop:10,padding:"9px 14px",background:"rgba(212,146,10,.1)",border:"1px solid rgba(212,146,10,.35)",borderRadius:10,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                <div><div style={{fontSize:12,fontWeight:700,color:G}}>📊 Wer war wann dabei?</div><div style={{fontSize:10,color:C.tm,marginTop:1}}>Zur Teilnehmer-Statistik</div></div>
-                <div style={{color:G,fontSize:16}}>→</div>
-              </div>
-            </div>
-
-            {/* Zielort */}
-            <div onClick={()=>{setTab("ausflug");setAusflugTab("plan");}} style={{...sC,cursor:"pointer",border:"1px solid rgba(16,185,129,.3)"}}>
-              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                <div style={sT}>📍 Zielort 2026</div>
-                <div style={{fontSize:11,color:C.tl,fontWeight:700}}>Details →</div>
-              </div>
-              <div style={{display:"flex",alignItems:"center",gap:10}}>
-                <div style={{fontSize:24}}>🌲</div>
-                <div>
-                  <div style={{fontSize:14,fontWeight:800,color:C.tl}}>Westerwald – Schönerlen</div>
-                  <div style={{fontSize:11,color:C.tm,marginTop:1}}>Einstimmig gewählt · 11/11 Stimmen</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Tricount */}
-            <div style={{background:"linear-gradient(135deg,rgba(212,146,10,.18),rgba(212,146,10,.05))",border:"1px solid "+G,borderRadius:14,padding:"12px 14px"}}>
-              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-                <div><div style={{fontWeight:800,fontSize:13,color:G}}>💰 Endabrechnung 2026</div><div style={{fontSize:10,color:C.tm,marginTop:1}}>Kosten teilen via Tricount</div></div>
-                <a href="https://tricount.com/tOWIhxKYqapuYQVFqh" target="_blank" rel="noreferrer" style={{padding:"5px 12px",borderRadius:20,background:"rgba(212,146,10,.2)",border:"1px solid "+G,color:G,fontSize:11,fontWeight:700,textDecoration:"none"}}>Tricount →</a>
-              </div>
-              <div style={{borderTop:"1px solid rgba(212,146,10,.25)",paddingTop:8}}>
-                <div style={{fontSize:9,color:C.tm,textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:6}}>Wer hat eingetragen & abgerechnet?</div>
-                 {new Date() < TOUR ? (
-                   <div style={{fontSize:11,color:C.tm,fontStyle:"italic"}}>Namen erscheinen ab 04. September 2026</div>
-                 ) : (
-                   <div style={{display:"flex",flexWrap:"wrap",gap:3}}>
-                     {allDads.map(dad => {
-                       const done = tricountDone[dad];
-                       return (
-                         <div key={dad} onClick={()=>syncTricountDone({...tricountDone,[dad]:!tricountDone[dad]})} style={{display:"flex",alignItems:"center",gap:3,padding:"2px 7px",borderRadius:20,background:done?"rgba(16,185,129,.18)":"transparent",cursor:"pointer"}}>
-                           <span style={{fontSize:9,color:done?"#10B981":"rgba(255,255,255,.2)"}}>{done?"✓":"○"}</span>
-                           <span style={{fontSize:10,fontWeight:done?700:400,color:done?"#10B981":C.tf}}>{dad}</span>
-                         </div>
-                       );
-                     })}
-                     {Object.values(tricountDone).filter(Boolean).length===allDads.length&&<div style={{marginTop:6,fontSize:11,color:"#10B981",fontWeight:700,textAlign:"center"}}>✅ Alle haben abgerechnet!</div>}
-                   </div>
-                 )}
-            </div>
+            <p>CAMP TAB TEST</p>
           </div>
         )}
 
@@ -639,7 +507,7 @@ export default function App(){
                     if(!first||!last)return;
                     const kids=newKids.split(",").map(k=>k.trim()).filter(Boolean).map(k=>{
                       const isGirl=k.includes("👧");
-                      const name=k.replace(/[👦👧]/gu,"").trim();
+                      const name=k.replace("👦","").replace("👧","").trim();
                       return{first:name||k,g:isGirl?"👧":"👦",st:"yes"};
                     });
                     syncFams([...(Array.isArray(fams)?fams:[...FAM0]),{id:Date.now(),first,last,dSt:"yes",reg:false,paid:false,kids}]);
