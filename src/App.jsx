@@ -932,7 +932,7 @@ export default function App(){
               <div style={{fontSize:11,color:"#60A5FA",marginBottom:4}}>📍 Hofgut Schönerlen · 04.–06. September 2026</div>
               <div style={{fontSize:10,color:C.tm}}>Wettervorschau näher am Termin präziser. Klimadaten September Westerwald.</div>
             </div>
-            {[{day:"Freitag, 04.09.",icon:"⛅",temp:"19°C",low:"13°C",rain:"20%",wind:"12 km/h",desc:"Wechselnd bewölkt"},{day:"Samstag, 05.09.",icon:"🌤️",temp:"21°C",low:"14°C",rain:"10%",wind:"8 km/h",desc:"Überwiegend sonnig"},{day:"Sonntag, 06.09.",icon:"🌥️",temp:"18°C",low:"12°C",rain:"30%",wind:"15 km/h",desc:"Bewölkt, etwas Regen"}].map((w,i) => (
+            {[{day:"Freitag, 04.09.",icon:"⛅",temp:"19°C",low:"13°C",rain:"20%",wind:"12 km/h",desc:"Wechselnd bewölkt"},{day:"Samstag, 05.09.",icon:"🌤",temp:"21°C",low:"14°C",rain:"10%",wind:"8 km/h",desc:"Überwiegend sonnig"},{day:"Sonntag, 06.09.",icon:"🌥️",temp:"18°C",low:"12°C",rain:"30%",wind:"15 km/h",desc:"Bewölkt, etwas Regen"}].map((w,i) => (
               <div key={i} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:14,padding:"14px 16px",marginBottom:10}}>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
                   <div><div style={{fontWeight:800,fontSize:13}}>{w.day}</div><div style={{fontSize:11,color:C.tm,marginTop:2}}>{w.desc}</div></div>
@@ -1133,7 +1133,7 @@ export default function App(){
                     <div key={s.yr} style={{marginBottom:8}}>
                       <div onClick={()=>setExpStatYr(isE?null:s.yr)} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:isE?"14px 14px 0 0":14,padding:"11px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:10}}>
                         <div style={{width:52,borderRadius:9,background:"rgba(255,255,255,.07)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flexShrink:0,padding:"4px 0"}}>
-                          <div style={{fontSize:18,lineHeight:1}}>{s.wx.includes("Sonnig")||s.wx.includes("heiß")?"☀️":s.wx.includes("verregnet")||s.wx.includes("Regen")?"🌧️":s.wx.includes("Hitzesommer")?"🔥":s.wx.includes("Wechsel")?"⛅":"🌥️"}</div>
+                          <div style={{fontSize:18,lineHeight:1}}>{s.wx.includes("Sonnig")||s.wx.includes("heiß")?"☀️":s.wx.includes("verregnet")||s.wx.includes("Regen")?"🌧️":s.wx.includes("Hitzesommer")?"🔥":s.wx.includes("Wechsel")?"⛅":"🌥"}</div>
                           <div style={{fontFamily:"Oswald,sans-serif",fontWeight:700,fontSize:13,color:C.tm,marginTop:2}}>{s.yr}</div>
                         </div>
                         <div style={{flex:1}}>
@@ -1184,7 +1184,7 @@ export default function App(){
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
                   {STATS0.map(s => {
                     const wx2=s.wx;
-                    const em2=wx2.includes("Sonnig")||wx2.includes("heiß")?"☀️":wx2.includes("verregnet")||wx2.includes("Regen")?"🌧️":wx2.includes("Hitzesommer")?"🔥":wx2.includes("Wechsel")?"⛅":"🌥️";
+                    const em2=wx2.includes("Sonnig")||wx2.includes("heiß")?"☀️":wx2.includes("verregnet")||wx2.includes("Regen")?"🌧️":wx2.includes("Hitzesommer")?"🔥":wx2.includes("Wechsel")?"⛅":"🌥";
                     const tot2=Object.keys(s.who).length+(s.ex||[]).length;
                     return (
                       <div key={s.yr} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:12,padding:"10px 12px",display:"flex",alignItems:"center",gap:10}}>
