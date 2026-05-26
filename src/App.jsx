@@ -59,7 +59,7 @@ const DESTS = [
   {id:2,name:"Westerwald - Schönerlen",emoji:"🌲",flag:"🇩🇪",desc:"Naturcamp, Teich, Esel-Trekking",
    addr:"Hofgut-Schönerlen 2, 56244 Steinen",nav:"https://maps.google.com/?q=Hofgut+Schönerlen+Steinen",
    hp:"https://www.camping-westerwald.de/",dist:"~1,5 Std.",
-   detail:"Idyllischer Naturcamp im Westerwald am Teich. Esel-Trekking, Broetchenservice. Heimat des Daddycamps 2020-2024!",
+   detail:"Idyllischer Naturcamp im Westerwald am Teich. Esel-Trekking, Broetchenservice. Heimat des Daddycamps 2019-2024!",
    hl:["Esel-Trekking","Brötchenservice","Naturstellplätze","Teich"],
    prices:[{l:"Stellplatz",p:"13 EUR",b:true},{l:"Erw. ab 12",p:"8 EUR",b:false},{l:"Kinder",p:"4 EUR",b:false},{l:"Strom/kWh",p:"0,75 EUR",b:false}],
    votes:0,ab:false},
@@ -161,7 +161,7 @@ const LIEDER0 = [
 
 const TROPHIES = ["Grillmeister","Mutigster Kletterer","Frühschläfer-Award","Stimmungskanone","Bester Fotograf","Kids-Held"];
 const CTRS0 = [{key:"bier",label:"Bierkisten",unit:"Kisten"},{key:"wein",label:"Weinflaschen",unit:"Fl."},{key:"sekt",label:"Sektflaschen",unit:"Fl."},{key:"hard",label:"Harter Stoff",unit:"Fl."},{key:"fleisch",label:"Fleischstücke",unit:"Stk."}];
-const POLLS0 = [{id:1,q:"Samstagsausflug um 10 Uhr?",ja:0,nein:0},{id:2,q:"Fruehstueck am Sonntag gemeinsam?",ja:0,nein:0}];
+const POLLS0 = [{id:1,q:"Samstagsausflug um 10 Uhr?",ja:0,nein:0},{id:2,q:"Frühstück am Sonntag gemeinsam?",ja:0,nein:0}];
 
 const ST = {
   yes:  {l:"Dabei", s:"✓", bg:"rgba(16,185,129,.18)", c:"#10B981", b:"rgba(16,185,129,.4)"},
@@ -522,8 +522,11 @@ export default function App(){
             </div>
 
             {/* Zielort */}
-            <div style={sC}>
-              <div style={sT}>📍 Zielort 2026</div>
+            <div onClick={()=>{setTab("ausflug");setAusflugTab("plan");}} style={{...sC,cursor:"pointer",border:"1px solid rgba(16,185,129,.3)"}}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                <div style={sT}>📍 Zielort 2026</div>
+                <div style={{fontSize:11,color:C.tl,fontWeight:700}}>Details →</div>
+              </div>
               <div style={{display:"flex",alignItems:"center",gap:10}}>
                 <div style={{fontSize:24}}>🌲</div>
                 <div>
@@ -541,19 +544,22 @@ export default function App(){
               </div>
               <div style={{borderTop:"1px solid rgba(212,146,10,.25)",paddingTop:8}}>
                 <div style={{fontSize:9,color:C.tm,textTransform:"uppercase",letterSpacing:2,fontWeight:700,marginBottom:6}}>Wer hat eingetragen & abgerechnet?</div>
-                <div style={{display:"flex",flexWrap:"wrap",gap:3}}>
-                  {allDads.map(dad => {
-                    const done = tricountDone[dad];
-                    return (
-                      <div key={dad} onClick={()=>syncTricountDone({...tricountDone,[dad]:!tricountDone[dad]})} style={{display:"flex",alignItems:"center",gap:3,padding:"2px 7px",borderRadius:20,background:done?"rgba(16,185,129,.18)":"transparent",cursor:"pointer"}}>
-                        <span style={{fontSize:9,color:done?"#10B981":"rgba(255,255,255,.2)"}}>{done?"✓":"○"}</span>
-                        <span style={{fontSize:10,fontWeight:done?700:400,color:done?"#10B981":C.tf}}>{dad}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-                {Object.values(tricountDone).filter(Boolean).length===DADS.length&&<div style={{marginTop:6,fontSize:11,color:"#10B981",fontWeight:700,textAlign:"center"}}>✅ Alle haben abgerechnet!</div>}
-              </div>
+                 {new Date() < TOUR ? (
+                   <div style={{fontSize:11,color:C.tm,fontStyle:"italic"}}>Namen erscheinen ab 04. September 2026</div>
+                 ) : (
+                   <div style={{display:"flex",flexWrap:"wrap",gap:3}}>
+                     {allDads.map(dad => {
+                       const done = tricountDone[dad];
+                       return (
+                         <div key={dad} onClick={()=>syncTricountDone({...tricountDone,[dad]:!tricountDone[dad]})} style={{display:"flex",alignItems:"center",gap:3,padding:"2px 7px",borderRadius:20,background:done?"rgba(16,185,129,.18)":"transparent",cursor:"pointer"}}>
+                           <span style={{fontSize:9,color:done?"#10B981":"rgba(255,255,255,.2)"}}>{done?"✓":"○"}</span>
+                           <span style={{fontSize:10,fontWeight:done?700:400,color:done?"#10B981":C.tf}}>{dad}</span>
+                         </div>
+                       );
+                     })}
+                     {Object.values(tricountDone).filter(Boolean).length===allDads.length&&<div style={{marginTop:6,fontSize:11,color:"#10B981",fontWeight:700,textAlign:"center"}}>✅ Alle haben abgerechnet!</div>}
+                   </div>
+                 )}
             </div>
           </div>
         )}
@@ -1126,8 +1132,9 @@ export default function App(){
                   return (
                     <div key={s.yr} style={{marginBottom:8}}>
                       <div onClick={()=>setExpStatYr(isE?null:s.yr)} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:isE?"14px 14px 0 0":14,padding:"11px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:10}}>
-                        <div style={{width:42,height:42,borderRadius:9,background:"rgba(255,255,255,.07)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                          <div style={{fontFamily:"Oswald,sans-serif",fontWeight:700,fontSize:14,color:C.tm}}>{s.yr}</div>
+                        <div style={{width:52,borderRadius:9,background:"rgba(255,255,255,.07)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",flexShrink:0,padding:"4px 0"}}>
+                          <div style={{fontSize:18,lineHeight:1}}>{s.wx.includes("Sonnig")||s.wx.includes("heiß")?"☀️":s.wx.includes("verregnet")||s.wx.includes("Regen")?"🌧️":s.wx.includes("Hitzesommer")?"🔥":s.wx.includes("Wechsel")?"⛅":"🌥️"}</div>
+                          <div style={{fontFamily:"Oswald,sans-serif",fontWeight:700,fontSize:13,color:C.tm,marginTop:2}}>{s.yr}</div>
                         </div>
                         <div style={{flex:1}}>
                           <div style={{fontSize:11,fontWeight:700,marginBottom:2}}>{s.wx}</div>
