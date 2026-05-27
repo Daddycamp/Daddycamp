@@ -217,7 +217,6 @@ export default function App(){
   const [custCtrs,setCustCtrs] = useState([]);
   const [newCtrName,setNewCtrName] = useState("");
   const [lieder,setLieder] = useState(LIEDER0);
-  const [newLiedYr,setNewLiedYr] = useState("");
   const [showAddFam,setShowAddFam] = useState(false);
   const [newFamFirst,setNewFamFirst] = useState("");
   const [newFamLast,setNewFamLast]  = useState("");
@@ -226,8 +225,6 @@ export default function App(){
   const [sched,setSched] = useState(SCHED0);
   const [editSlot,setEditSlot] = useState(null);
   const [editVal,setEditVal] = useState({t:"",l:""});
-  const [newLiedSong,setNewLiedSong] = useState("");
-  const [newLiedArtist,setNewLiedArtist] = useState("");
 
   const [att,setAtt] = useState(() => {
     const r = {};
@@ -264,7 +261,7 @@ export default function App(){
     listen("shops",setShops);listen("shopExtras",setShopExtras);
     listen("polls",setPolls);listen("tVotes",setTVotes);listen("myTV",setMyTV);
     listen("ctrs",setCtrs);listen("custCtrs",setCustCtrs);
-    listen("lieder",setLieder);listen("tricountDone",setTricountDone);
+    listen("tricountDone",setTricountDone);
     listen("att",setAtt);// pkChk is local-only (localStorage)// packExtra is local-only (localStorage)
     listen("sched",setSched);
     return () => unsubs.forEach(u => u());
@@ -313,7 +310,6 @@ export default function App(){
   const syncMyTV         = v => { setMyTV(v);         fbSet("myTV", v); };
   const syncCtrs         = v => { setCtrs(v);         fbSet("ctrs", v); };
   const syncCustCtrs     = v => { setCustCtrs(v);     fbSet("custCtrs", v); };
-  const syncLieder       = v => { setLieder(v);       fbSet("lieder", v); };
   const syncTricountDone = v => { setTricountDone(v); fbSet("tricountDone", v); };
   const syncAtt          = v => { setAtt(v);          fbSet("att", v); };
   const syncPkChk        = v => { setPkChk(v); try { localStorage.setItem("dc_pkChk", JSON.stringify(v)); } catch(e){} };
@@ -413,9 +409,9 @@ export default function App(){
       <div style={{minHeight:"100vh",background:C.bg,fontFamily:"Nunito,sans-serif",color:C.tx,paddingBottom:80}}>
 
         {/* HERO */}
-        <div style={{position:"relative",height:tab==="home"?380:130,transition:"height .4s",overflow:"hidden"}}>
-          <img src={P25} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 35%"}}/>
-          <div style={{position:"absolute",inset:0,background:tab==="home"?"linear-gradient(to bottom,rgba(30,45,62,.05) 0%,rgba(30,45,62,.45) 55%,rgba(30,45,62,1) 100%)":"linear-gradient(to bottom,rgba(30,45,62,.5),rgba(30,45,62,.95))"}}/>
+        <div style={{position:"relative",height:tab==="home"?420:130,transition:"height .4s",overflow:"hidden"}}>
+          <img src={P25} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 55%"}}/>
+          <div style={{position:"absolute",inset:0,background:tab==="home"?"linear-gradient(to bottom,rgba(30,45,62,.75) 0%,rgba(30,45,62,.1) 30%,rgba(30,45,62,.05) 55%,rgba(30,45,62,.7) 85%,rgba(30,45,62,1) 100%)":"linear-gradient(to bottom,rgba(30,45,62,.5),rgba(30,45,62,.95))"}}/>
           <div style={{position:"absolute",top:tab==="home"?"22%":"50%",left:"50%",transform:"translate(-50%,-50%)",textAlign:"center",width:"100%"}}>
             <div style={{fontSize:tab==="home"?50:26,fontFamily:"Oswald,sans-serif",fontWeight:700,letterSpacing:tab==="home"?8:5,color:"#fff",textTransform:"uppercase",textShadow:"0 2px 20px rgba(0,0,0,.6)"}}>Daddy<span style={{color:G}}>camp</span></div>
             {tab==="home" && <div style={{fontSize:12,letterSpacing:3,color:"rgba(255,255,255,.75)",textTransform:"uppercase",marginTop:4}}>Väter. Kinder. Legenden.</div>}
@@ -1063,7 +1059,7 @@ export default function App(){
         {tab==="fun" && (
           <div>
             <div style={{display:"flex",gap:5,marginBottom:16,flexWrap:"wrap"}}>
-              {[{id:"trophies",l:"🏆 Trophäen"},{id:"polls",l:"📢 Abstimmungen"},{id:"teilnahme",l:"📊 Teilnahme"},{id:"lied",l:"🎵 Lied"},{id:"ctr",l:"🍺 Verbrauch"}].map(x => (
+              {[{id:"trophies",l:"🏆 Trophäen"},{id:"polls",l:"📢 Abstimmungen"},{id:"teilnahme",l:"📊 Teilnahme"},{id:"ctr",l:"🍺 Verbrauch"}].map(x => (
                 <button key={x.id} onClick={()=>setFunTab(x.id)} style={{padding:"6px 11px",borderRadius:9,border:"1px solid "+(funTab===x.id?G:C.bo),background:funTab===x.id?"rgba(212,146,10,.16)":C.bc,color:funTab===x.id?G:C.tm,fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{x.l}</button>
               ))}
             </div>
@@ -1183,41 +1179,6 @@ export default function App(){
                   })}
                 </div>
                 
-              </div>
-            )}
-
-            {funTab==="lied" && (
-              <div>
-                <div style={sT}>🎵 Lied des Jahres</div>
-                <p style={{fontSize:12,color:C.tm,marginBottom:14}}>Das Lied das euren Sommer geprägt hat.</p>
-                <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:16}}>
-                  {lieder.sort((a,b)=>Number(b.yr)-Number(a.yr)).map(ls => (
-                    <div key={ls.yr} style={sC}>
-                      <div style={{display:"flex",alignItems:"center",gap:10}}>
-                        <div style={{fontFamily:"Oswald,sans-serif",fontWeight:700,fontSize:20,color:G,minWidth:44,flexShrink:0}}>{ls.yr}</div>
-                        <div style={{flex:1,minWidth:0}}>
-                          <div style={{fontSize:13,fontWeight:700,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{ls.song}</div>
-                          <div style={{fontSize:11,color:C.tm}}>{ls.artist}</div>
-                        </div>
-                        <div style={{display:"flex",gap:6,flexShrink:0}}>
-                          <a href={"https://music.apple.com/search?term="+encodeURIComponent(ls.song+" "+ls.artist)} target="_blank" rel="noreferrer" style={{width:30,height:30,borderRadius:8,background:"rgba(255,255,255,.08)",border:"1px solid "+C.bl,display:"flex",alignItems:"center",justifyContent:"center",textDecoration:"none",fontSize:16}}>🍎</a>
-                          <a href={"https://open.spotify.com/search/"+encodeURIComponent(ls.song+" "+ls.artist)} target="_blank" rel="noreferrer" style={{width:30,height:30,borderRadius:8,background:"rgba(30,215,96,.1)",border:"1px solid rgba(30,215,96,.3)",display:"flex",alignItems:"center",justifyContent:"center",textDecoration:"none",fontSize:16}}>🟢</a>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{...sC,background:"rgba(212,146,10,.08)",border:"1px solid rgba(212,146,10,.3)"}}>
-                  <div style={{fontWeight:800,fontSize:12,color:G,marginBottom:10}}>+ Lied des Jahres eintragen</div>
-                  <div style={{display:"flex",gap:7,marginBottom:8}}>
-                    <input value={newLiedYr} onChange={e=>setNewLiedYr(e.target.value)} placeholder="Jahr" style={{width:72,flexShrink:0,background:"rgba(255,255,255,.09)",border:"1px solid "+C.bo,borderRadius:9,padding:"8px 10px",color:C.tx,fontSize:12,fontFamily:"Nunito,sans-serif",outline:"none"}}/>
-                    <input value={newLiedSong} onChange={e=>setNewLiedSong(e.target.value)} placeholder="Titel..." style={{flex:1,background:"rgba(255,255,255,.09)",border:"1px solid "+C.bo,borderRadius:9,padding:"8px 10px",color:C.tx,fontSize:12,fontFamily:"Nunito,sans-serif",outline:"none"}}/>
-                  </div>
-                  <div style={{display:"flex",gap:7}}>
-                    <input value={newLiedArtist} onChange={e=>setNewLiedArtist(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")addLied();}} placeholder="Künstler..." style={{flex:1,background:"rgba(255,255,255,.09)",border:"1px solid "+C.bo,borderRadius:9,padding:"8px 10px",color:C.tx,fontSize:12,fontFamily:"Nunito,sans-serif",outline:"none"}}/>
-                    <button onClick={addLied} style={{padding:"8px 16px",borderRadius:9,background:C.gd,border:"none",color:"#fff",fontWeight:800,cursor:"pointer",fontSize:12,fontFamily:"Nunito,sans-serif",flexShrink:0}}>Speichern</button>
-                  </div>
-                </div>
               </div>
             )}
 
