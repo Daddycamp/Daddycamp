@@ -205,8 +205,8 @@ export default function App(){
   const [openAsgn,setOpenAsgn] = useState(null);
   const [delConf,setDelConf] = useState(null);
 
-  const [pkChk,setPkChk] = useState({});
-  const [packExtra,setPackExtra] = useState({});
+  const [pkChk,setPkChk] = useState(() => { try { return JSON.parse(localStorage.getItem("dc_pkChk")||"{}"); } catch(e){ return {}; } });
+  const [packExtra,setPackExtra] = useState(() => { try { return JSON.parse(localStorage.getItem("dc_packExtra")||"{}"); } catch(e){ return {}; } });
   const [newPackItem,setNewPackItem] = useState({});
 
   const [polls,setPolls] = useState(POLLS0);
@@ -265,7 +265,7 @@ export default function App(){
     listen("polls",setPolls);listen("tVotes",setTVotes);listen("myTV",setMyTV);
     listen("ctrs",setCtrs);listen("custCtrs",setCustCtrs);
     listen("lieder",setLieder);listen("tricountDone",setTricountDone);
-    listen("att",setAtt);listen("pkChk",setPkChk);listen("packExtra",setPackExtra);
+    listen("att",setAtt);// pkChk is local-only (localStorage)// packExtra is local-only (localStorage)
     listen("sched",setSched);
     return () => unsubs.forEach(u => u());
   }, []);
@@ -316,8 +316,8 @@ export default function App(){
   const syncLieder       = v => { setLieder(v);       fbSet("lieder", v); };
   const syncTricountDone = v => { setTricountDone(v); fbSet("tricountDone", v); };
   const syncAtt          = v => { setAtt(v);          fbSet("att", v); };
-  const syncPkChk        = v => { setPkChk(v);        fbSet("pkChk", v); };
-  const syncPackExtra    = v => { setPackExtra(v);    fbSet("packExtra", v); };
+  const syncPkChk        = v => { setPkChk(v); try { localStorage.setItem("dc_pkChk", JSON.stringify(v)); } catch(e){} };
+  const syncPackExtra    = v => { setPackExtra(v); try { localStorage.setItem("dc_packExtra", JSON.stringify(v)); } catch(e){} };
   const syncSched        = v => { setSched(v);        fbSet("sched", v); };
 
   function addLied() {
@@ -432,7 +432,7 @@ export default function App(){
             <div style={{display:"flex",gap:7,marginBottom:16}}>
               {[{l:"Tage",v:clock.D},{l:"Std",v:clock.H},{l:"Min",v:clock.M},{l:"Sek",v:clock.S}].map(x => (
                 <div key={x.l} style={{flex:1,background:C.bgL,border:"1px solid "+C.bo,borderRadius:12,padding:"12px 5px",textAlign:"center"}}>
-                  <div style={{fontSize:30,fontWeight:800,fontFamily:"Oswald,sans-serif",color:G}}>{p2(x.v)}</div>
+                  <div style={{fontSize:38,fontWeight:800,fontFamily:"Oswald,sans-serif",color:G}}>{p2(x.v)}</div>
                   <div style={{fontSize:9,color:C.tm,textTransform:"uppercase",letterSpacing:2,marginTop:2}}>{x.l}</div>
                 </div>
               ))}
