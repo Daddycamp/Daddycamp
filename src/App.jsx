@@ -512,7 +512,7 @@ export default function App(){
                   </div>
                 );
               })()}
-              <div onClick={()=>{setTab("fun");setFunTab("stats");}} style={{marginTop:10,padding:"9px 14px",background:"rgba(212,146,10,.1)",border:"1px solid rgba(212,146,10,.35)",borderRadius:10,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <div onClick={()=>{setTab("fun");setFunTab("teilnahme");}} style={{marginTop:10,padding:"9px 14px",background:"rgba(212,146,10,.1)",border:"1px solid rgba(212,146,10,.35)",borderRadius:10,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
                 <div><div style={{fontSize:12,fontWeight:700,color:G}}>📊 Wer war wann dabei?</div><div style={{fontSize:10,color:C.tm,marginTop:1}}>Zur Teilnehmer-Statistik</div></div>
                 <div style={{color:G,fontSize:16}}>→</div>
               </div>
@@ -711,7 +711,7 @@ export default function App(){
         {tab==="ausflug" && (
           <div>
             <div style={{display:"flex",gap:7,marginBottom:16}}>
-              {[{id:"ort",l:"🗳️ Ort & Abstimmung"},{id:"plan",l:"📅 Plan & Ausflüge"},{id:"termine",l:"📆 Daddycamp Termine"},{id:"wetter",l:"🌤️ Wetter"}].map(x => (
+              {[{id:"ort",l:"🗳️ Ort & Abstimmung"},{id:"plan",l:"📅 Plan & Ausflüge"},{id:"termine",l:"📆 Termine 2026–30"},{id:"wetter",l:"🌤️ Wetter"}].map(x => (
                 <button key={x.id} onClick={()=>setAusflugTab(x.id)} style={{flex:1,padding:"8px 4px",borderRadius:10,border:"1px solid "+(ausflugTab===x.id?G:C.bo),background:ausflugTab===x.id?"rgba(212,146,10,.16)":C.bc,color:ausflugTab===x.id?G:C.tm,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{x.l}</button>
               ))}
             </div>
@@ -791,7 +791,7 @@ export default function App(){
             {/* PLAN SUB-TAB */}
             {ausflugTab==="termine" && (
               <div>
-                <div style={sT}>📆 Zukünftige Daddycamps</div>
+                <div style={sT}>📆 Daddycamp Termine 2026–30</div>
                 <p style={{fontSize:13,color:C.tm,marginBottom:16}}>Die nächsten Jahre sind bereits reserviert – save the date!</p>
                 {[
                   {yr:2026, start:new Date(2026,8,4),  dates:"04. – 06. September 2026", days:"Fr – So", highlight:true},
@@ -1182,24 +1182,7 @@ export default function App(){
                     );
                   })}
                 </div>
-                <div style={sT}>🌦️ Wetterkarte</div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
-                  {STATS0.map(s => {
-                    const wx2=s.wx;
-                    const em2=wx2.includes("Sonnig")||wx2.includes("heiß")?"☀️":wx2.includes("verregnet")||wx2.includes("Regen")?"🌧️":wx2.includes("Hitzesommer")?"🔥":wx2.includes("Wechsel")?"⛅":"🌥";
-                    const tot2=Object.keys(s.who).length+(s.ex||[]).length;
-                    return (
-                      <div key={s.yr} style={{background:C.bc,border:"1px solid "+C.bo,borderRadius:12,padding:"10px 12px",display:"flex",alignItems:"center",gap:10}}>
-                        <div style={{fontSize:26,lineHeight:1}}>{em2}</div>
-                        <div>
-                          <div style={{fontFamily:"Oswald,sans-serif",fontWeight:700,fontSize:15,color:G,lineHeight:1}}>{s.yr}</div>
-                          <div style={{fontSize:10,color:C.tm,marginTop:2}}>{wx2}</div>
-                          <div style={{fontSize:9,color:C.tf,marginTop:1}}>{tot2} Familien</div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                
               </div>
             )}
 
