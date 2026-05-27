@@ -409,10 +409,9 @@ export default function App(){
       <div style={{minHeight:"100vh",background:C.bg,fontFamily:"Nunito,sans-serif",color:C.tx,paddingBottom:80}}>
 
         {/* HERO */}
-        <div style={{position:"relative",height:tab==="home"?260:130,transition:"height .4s",overflow:"hidden"}}>
-          <div style={{position:"absolute",inset:0,backgroundImage:"url("+P25+")",backgroundSize:"cover",backgroundPosition:"center 40%",filter:"blur(8px)",transform:"scale(1.1)"}}/>
-          <img src={P25} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"contain",objectPosition:"center bottom"}}/>
-          <div style={{position:"absolute",inset:0,background:tab==="home"?"linear-gradient(to bottom,rgba(30,45,62,.8) 0%,rgba(30,45,62,.0) 25%,rgba(30,45,62,.0) 75%,rgba(30,45,62,.95) 100%)":"linear-gradient(to bottom,rgba(30,45,62,.5),rgba(30,45,62,.95))"}}/>
+        <div style={{position:"relative",height:tab==="home"?380:130,transition:"height .4s",overflow:"hidden"}}>
+          <img src={P25} alt="" style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 35%"}}/>
+          <div style={{position:"absolute",inset:0,background:tab==="home"?"linear-gradient(to bottom,rgba(30,45,62,.05) 0%,rgba(30,45,62,.45) 55%,rgba(30,45,62,1) 100%)":"linear-gradient(to bottom,rgba(30,45,62,.5),rgba(30,45,62,.95))"}}/>
           <div style={{position:"absolute",top:tab==="home"?"22%":"50%",left:"50%",transform:"translate(-50%,-50%)",textAlign:"center",width:"100%"}}>
             <div style={{fontSize:tab==="home"?50:26,fontFamily:"Oswald,sans-serif",fontWeight:700,letterSpacing:tab==="home"?8:5,color:"#fff",textTransform:"uppercase",textShadow:"0 2px 20px rgba(0,0,0,.6)"}}>Daddy<span style={{color:G}}>camp</span></div>
             {tab==="home" && <div style={{fontSize:12,letterSpacing:3,color:"rgba(255,255,255,.75)",textTransform:"uppercase",marginTop:4}}>Väter. Kinder. Legenden.</div>}
