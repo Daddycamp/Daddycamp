@@ -290,7 +290,7 @@ export default function App(){
   const unassigned   = allShopItems.filter(i => getA(i).length===0);
   const dadItems     = dad => allShopItems.filter(i => getA(i).includes(dad));
 
-  const tD = fams.length;
+  const tD = fams.filter(f=>f.dSt==="yes").length;
   const tK = fams.reduce((s,f) => s+f.kids.length, 0);
   const cD = fams.filter(f => f.dSt==="yes").length;
   const cK = fams.reduce((s,f) => s+(f.kids||[]).filter(k=>k.st==="yes").length, 0);
@@ -580,7 +580,7 @@ export default function App(){
                         <div style={{fontWeight:800,fontSize:13}}>{f.id===1?"👑 ":""}{f.first} {f.last}{f.reg&&f.paid?" ✅":""}</div>
                         <div style={{fontSize:10,color:C.tm,marginTop:1}}>{(f.kids||[]).length} {(f.kids||[]).length===1?"Kind":"Kinder"}</div>
                       </div>
-                      {typeof f.id === "number" && f.id > 100000 && (
+                      {f.id !== 1 && (
                   <button onClick={e=>{e.stopPropagation();if(window.confirm(f.first+" "+f.last+" löschen?")){syncFams(fams.filter(x=>x.id!==f.id));if(expFam===f.id)setExpFam(null);}}} style={{width:26,height:26,borderRadius:6,border:"1px solid rgba(239,68,68,.4)",background:"transparent",color:"rgba(239,68,68,.7)",cursor:"pointer",fontSize:13,flexShrink:0}}>🗑</button>
                 )}
                 <button onClick={e=>{e.stopPropagation();const ns=cyc(fs);syncFams(fams.map(x=>x.id!==f.id?x:{...x,dSt:ns,kids:x.kids.map(k=>({...k,st:ns}))}));}} style={{background:cfg.bg,border:"1px solid "+cfg.b,color:cfg.c,borderRadius:20,padding:"4px 12px",fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"Nunito,sans-serif"}}>{cfg.l}</button>
@@ -1102,7 +1102,10 @@ export default function App(){
                   const tot = poll.ja+poll.nein;
                   return (
                     <div key={poll.id} style={sC}>
-                      <div style={{fontWeight:700,fontSize:13,marginBottom:10}}>{poll.q}</div>
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
+                        <div style={{fontWeight:700,fontSize:13,flex:1}}>{poll.q}</div>
+                        <button onClick={()=>{if(window.confirm("Abstimmung löschen?")){syncPolls(polls.filter(p=>p.id!==poll.id));}}} style={{marginLeft:8,padding:"2px 8px",borderRadius:20,border:"1px solid rgba(239,68,68,.4)",background:"transparent",color:"rgba(239,68,68,.7)",fontSize:11,cursor:"pointer",fontFamily:"Nunito,sans-serif",flexShrink:0}}>✕</button>
+                      </div>
                       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
                         <button onClick={()=>syncPolls(polls.map(x=>x.id!==poll.id?x:{...x,ja:x.ja+1}))} style={{padding:"9px",borderRadius:9,border:"1px solid "+C.tl,background:"rgba(16,185,129,.12)",color:C.tl,fontWeight:800,cursor:"pointer",fontSize:13,fontFamily:"Nunito,sans-serif"}}>Ja {poll.ja>0?"("+poll.ja+")":""}</button>
                         <button onClick={()=>syncPolls(polls.map(x=>x.id!==poll.id?x:{...x,nein:x.nein+1}))} style={{padding:"9px",borderRadius:9,border:"1px solid rgba(239,68,68,.4)",background:"rgba(239,68,68,.1)",color:C.rd,fontWeight:800,cursor:"pointer",fontSize:13,fontFamily:"Nunito,sans-serif"}}>Nein {poll.nein>0?"("+poll.nein+")":""}</button>
